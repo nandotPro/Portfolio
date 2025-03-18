@@ -14,6 +14,8 @@
   overflow-x: auto;
   scrollbar-width: thin;
   scrollbar-color: #333 var(--background);
+  position: relative;
+  z-index: 1;
 }
 
 .tabsBar::-webkit-scrollbar {
@@ -40,6 +42,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   height: 35px;
+  user-select: none;
 }
 
 .tab:hover {
@@ -174,4 +177,26 @@
   align-items: center;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Estilo para a aba sendo arrastada */
+.draggingTab {
+  opacity: 0.7;
+  background-color: #3c3c3c !important;
+  border: 1px dashed #565656 !important;
+  z-index: 5;
+  pointer-events: none !important;
+}
+
+/* Indicador de local de soltura */
+.dropIndicator {
+  width: 2px;
+  height: 80%;
+  background-color: #0078d7;
+  position: absolute;
+  top: 10%;
+  transition: left 0.1s ease;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 0 3px rgba(0, 120, 215, 0.5);
 } 

@@ -76,6 +76,10 @@ export default function Layout({ children }: LayoutProps) {
     );
   };
 
+  const handleReorderFiles = (newOrder: any[]) => {
+    setOpenFiles(newOrder);
+  };
+
   // Encontrar o arquivo atual
   const currentFile = openFiles.find(file => file.id === activeFileId);
 
@@ -93,6 +97,7 @@ export default function Layout({ children }: LayoutProps) {
           onCloseProject={handleCloseProject}
           onSwitchProject={handleSwitchProject}
           onContentLoaded={handleContentLoaded}
+          onReorderFiles={handleReorderFiles}
           currentFileAnimated={currentFile?.animated || false}
           currentFileContent={currentFile?.content}
         >

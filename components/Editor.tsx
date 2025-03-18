@@ -3,7 +3,7 @@
 import styles from './Editor.module.css';
 import ProjectPreview from './ProjectPreview';
 import CodeContent from './CodeContent';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface OpenFile {
   id: string;
@@ -18,6 +18,7 @@ interface EditorProps {
   onCloseProject: (projectId: string) => void;
   onSwitchProject: (projectId: string) => void;
   onContentLoaded: (projectId: string, content: any, lineCount: number) => void;
+  onReorderFiles: (newOrder: OpenFile[]) => void;
   currentFileAnimated: boolean;
   currentFileContent?: any;
   children?: React.ReactNode;
@@ -29,6 +30,7 @@ export default function Editor({
   onCloseProject, 
   onSwitchProject,
   onContentLoaded,
+  onReorderFiles,
   currentFileAnimated,
   currentFileContent,
   children 
@@ -37,8 +39,17 @@ export default function Editor({
   const [lineCount, setLineCount] = useState(0);
   const [visibleLineCount, setVisibleLineCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // Estado para drag & drop
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dropIndicatorPos, setDropIndicatorPos] = useState<number | null>(null);
+  const tabsBarRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
+    // Redimensionar a array de refs quando o número de abas mudar
+    tabRefs.current = tabRefs.current.slice(0, openFiles.length);
+    
     // Definir se deve mostrar o preview
     if (activeFileId && 
         activeFileId !== 'about' && 
@@ -63,7 +74,7 @@ export default function Editor({
       }
       setIsAnimating(false);
     }
-  }, [activeFileId, currentFileAnimated]);
+  }, [activeFileId, currentFileAnimated, openFiles.length]);
 
   const handleContentChange = (count: number) => {
     // Só atualiza se o valor for diferente para evitar re-renders desnecessários
@@ -111,14 +122,152 @@ export default function Editor({
     return null;
   };
 
+  // Funções de drag & drop
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', index.toString());
+    setDraggingIndex(index);
+
+    // Adiciona um atraso para aplicar o estilo de arrasto
+    setTimeout(() => {
+      if (tabRefs.current[index]) {
+        tabRefs.current[index]?.classList.add(styles.draggingTab);
+      }
+    }, 0);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    if (draggingIndex === null || draggingIndex === index) {
+      setDropIndicatorPos(null);
+      return;
+    }
+
+    // Calcula a posição do indicador de soltura
+    const targetTab = tabRefs.current[index];
+    if (targetTab && tabsBarRef.current) {
+      const tabRect = targetTab.getBoundingClientRect();
+      const mouseX = e.clientX;
+      const middleX = tabRect.left + tabRect.width / 2;
+      
+      // Determina se o indicador deve aparecer à esquerda ou à direita da aba
+      if (mouseX < middleX) {
+        setDropIndicatorPos(tabRect.left);
+      } else {
+        setDropIndicatorPos(tabRect.right);
+      }
+    }
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    // Verifica se o mouse saiu completamente da barra de abas
+    if (tabsBarRef.current) {
+      const tabsBarRect = tabsBarRef.current.getBoundingClientRect();
+      if (
+        e.clientX < tabsBarRect.left || 
+        e.clientX > tabsBarRect.right || 
+        e.clientY < tabsBarRect.top || 
+        e.clientY > tabsBarRect.bottom
+      ) {
+        setDropIndicatorPos(null);
+      }
+    }
+  };
+
+  const handleDragEnd = () => {
+    // Limpa os estilos e estados de arrasto
+    if (draggingIndex !== null && tabRefs.current[draggingIndex]) {
+      tabRefs.current[draggingIndex]?.classList.remove(styles.draggingTab);
+    }
+    setDraggingIndex(null);
+    setDropIndicatorPos(null);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetIndex: number) => {
+    e.preventDefault();
+    
+    try {
+      const sourceIndexStr = e.dataTransfer.getData('text/plain');
+      if (!sourceIndexStr) return;
+      
+      const sourceIndex = parseInt(sourceIndexStr, 10);
+      if (isNaN(sourceIndex) || sourceIndex === targetIndex) {
+        return;
+      }
+
+      // Calcula a nova ordem das abas
+      const reorderedFiles = [...openFiles];
+      const [movedFile] = reorderedFiles.splice(sourceIndex, 1);
+      
+      // Ajuste na lógica de inserção para lidar melhor com o movimento para a direita
+      const targetTab = tabRefs.current[targetIndex];
+      if (targetTab) {
+        const tabRect = targetTab.getBoundingClientRect();
+        const mouseX = e.clientX;
+        const middleX = tabRect.left + tabRect.width / 2;
+        
+        // Ajuste para lidar com o caso especial quando arrastando da esquerda para a direita
+        let insertionIndex = targetIndex;
+        
+        if (sourceIndex < targetIndex) {
+          // Se estamos arrastando para a direita
+          if (mouseX > middleX) {
+            // Se o mouse estiver além do meio da aba alvo, insira após ela
+            insertionIndex = targetIndex;
+          } else {
+            // Se o mouse estiver antes do meio da aba alvo, insira antes dela
+            insertionIndex = targetIndex - 1;
+          }
+        } else {
+          // Se estamos arrastando para a esquerda
+          if (mouseX < middleX) {
+            // Se o mouse estiver antes do meio da aba alvo, insira antes dela
+            insertionIndex = targetIndex;
+          } else {
+            // Se o mouse estiver além do meio da aba alvo, insira após ela
+            insertionIndex = targetIndex + 1;
+          }
+        }
+        
+        // Garante que o índice de inserção é válido
+        insertionIndex = Math.max(0, Math.min(insertionIndex, reorderedFiles.length));
+        reorderedFiles.splice(insertionIndex, 0, movedFile);
+      } else {
+        // Fallback caso o targetTab não seja encontrado
+        reorderedFiles.splice(targetIndex, 0, movedFile);
+      }
+      
+      // Atualiza a ordem no componente pai
+      onReorderFiles(reorderedFiles);
+    } catch (error) {
+      console.error('Erro durante o drop:', error);
+    } finally {
+      // Sempre limpa os estados de arrasto ao final
+      handleDragEnd();
+    }
+  };
+
   return (
     <div className={styles.editorWrapper}>
-      <div className={styles.tabsBar}>
-        {openFiles.map(file => (
+      <div className={styles.tabsBar} 
+        ref={tabsBarRef}
+        onDragLeave={handleDragLeave}
+      >
+        {openFiles.map((file, index) => (
           <div 
             key={file.id} 
+            ref={(el: HTMLDivElement | null) => {
+              tabRefs.current[index] = el;
+            }}
             className={`${styles.tab} ${activeFileId === file.id ? styles.activeTab : ''}`}
             onClick={() => onSwitchProject(file.id)}
+            draggable={true}
+            onDragStart={(e) => handleDragStart(e, index)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDragEnd={handleDragEnd}
+            onDrop={(e) => handleDrop(e, index)}
           >
             <div className={styles.tabContent}>
               {getFileIcon(file.name.endsWith('.js') ? file.name.replace('.js', '.ts') : file.name)}
@@ -132,6 +281,18 @@ export default function Editor({
             </span>
           </div>
         ))}
+        
+        {/* Indicador de local de soltura - melhorado para garantir posicionamento correto */}
+        {dropIndicatorPos !== null && tabsBarRef.current && (
+          <div 
+            className={styles.dropIndicator} 
+            style={{ 
+              left: `${dropIndicatorPos - tabsBarRef.current.getBoundingClientRect().left}px`,
+              height: '80%',
+              top: '10%'
+            }} 
+          />
+        )}
       </div>
       
       <div className={styles.editorContainer}>
