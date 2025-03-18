@@ -12,6 +12,7 @@ interface EditorProps {
 
 export default function Editor({ activeProject, children }: EditorProps) {
   const [showPreview, setShowPreview] = useState(false);
+  const [lineCount, setLineCount] = useState(0);
 
   useEffect(() => {
     // Se um projeto está ativo, mostra o preview
@@ -25,6 +26,10 @@ export default function Editor({ activeProject, children }: EditorProps) {
       setShowPreview(false);
     }
   }, [activeProject]);
+
+  const handleContentChange = (count: number) => {
+    setLineCount(count);
+  };
 
   return (
     <div className={styles.editorWrapper}>
@@ -40,12 +45,16 @@ export default function Editor({ activeProject, children }: EditorProps) {
       <div className={styles.editorContainer}>
         <div className={styles.codeArea}>
           <div className={styles.lineNumbers}>
-            {Array.from({ length: 30 }, (_, i) => (
+            {/* Números de linha dinâmicos com no mínimo 1 linha */}
+            {Array.from({ length: Math.max(1, lineCount) }, (_, i) => (
               <div key={i} className={styles.lineNumber}>{i + 1}</div>
             ))}
           </div>
           <div className={styles.codeContent}>
-            <CodeContent activeSection={activeProject} />
+            <CodeContent 
+              activeSection={activeProject}
+              onContentChange={handleContentChange} 
+            />
           </div>
         </div>
 
