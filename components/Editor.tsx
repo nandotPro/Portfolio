@@ -106,7 +106,9 @@ export default function Editor({
             className={`${styles.tab} ${activeFileId === file.id ? styles.activeTab : ''}`}
             onClick={() => onSwitchProject(file.id)}
           >
-            {file.name}
+            {file.name.endsWith('.js') 
+              ? file.name.replace('.js', '.ts') 
+              : file.name}
             <span 
               className={styles.closeTab} 
               onClick={(e) => handleCloseTab(file.id, e)}
@@ -140,7 +142,7 @@ export default function Editor({
         ) : (
           <div className={styles.welcomeScreen}>
             <div className={styles.welcomeText}>
-              <span className={styles.welcomeTitle}>DEV PAD</span>
+              <span className={styles.welcomeTitle}>Portfolio by ILAN</span>
               <span className={styles.welcomeSubtitle}>Select a file to start</span>
             </div>
           </div>

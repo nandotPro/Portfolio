@@ -39,6 +39,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  height: 35px;
 }
 
 .tab:hover {
@@ -47,10 +48,10 @@
 
 .activeTab {
   background-color: var(--editor-bg);
-  color: var(--matrix-green);
-  text-shadow: 0 0 2px var(--matrix-green-glow);
-  border-bottom: 1px solid var(--matrix-green);
-  margin-bottom: -1px; /* Compensa a borda inferior */
+  color: #ffffff;
+  border-bottom: 1px solid #1e8ad6;
+  margin-bottom: -1px;
+  font-weight: 500;
 }
 
 .closeTab {
@@ -143,10 +144,10 @@
   font-size: 48px;
   font-weight: bold;
   color: rgba(180, 180, 180, 0.15);
-  text-shadow: 0 0 15px rgba(180, 180, 180, 0.1);
+  text-shadow: none;
   margin-bottom: 20px;
   letter-spacing: 5px;
-  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 .welcomeSubtitle {

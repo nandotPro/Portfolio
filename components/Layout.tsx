@@ -22,21 +22,30 @@ export default function Layout({ children }: LayoutProps) {
   // Arquivo ativo atual
   const [activeFileId, setActiveFileId] = useState<string | null>(null);
 
-  const handleOpenProject = (projectId: string) => {
+  const handleOpenProject = (projectPath: string, fileId: string = '') => {
+    const fileInfo = {
+      id: fileId || projectPath,
+      path: projectPath,
+      name: getProjectName(projectPath),
+      content: null,
+      animated: false
+    };
+    
+    // Verificação para garantir que o nome do arquivo inclua a extensão .ts
+    if (fileInfo.name && !fileInfo.name.endsWith('.ts') && !fileInfo.name.endsWith('.js')) {
+      fileInfo.name = `${fileInfo.name}.ts`;
+    }
+    
     // Verificar se o arquivo já está aberto
-    const isFileOpen = openFiles.some(file => file.id === projectId);
+    const isFileOpen = openFiles.some(file => file.id === fileInfo.id);
     
     if (!isFileOpen) {
       // Adicionar novo arquivo à lista (não animado ainda)
-      setOpenFiles(prev => [...prev, { 
-        id: projectId, 
-        name: `${projectId}.js`,
-        animated: false 
-      }]);
+      setOpenFiles(prev => [...prev, fileInfo]);
     }
     
     // Definir como arquivo ativo
-    setActiveFileId(projectId);
+    setActiveFileId(fileInfo.id);
   };
 
   const handleCloseProject = (projectId: string) => {
@@ -73,7 +82,11 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className={styles.container}>
       <div className={styles.editorContainer}>
-        <Sidebar setActiveProject={handleOpenProject} />
+        <Sidebar 
+          setActiveProject={handleOpenProject} 
+          activeFileId={activeFileId} 
+          openFiles={openFiles} 
+        />
         <Editor 
           openFiles={openFiles}
           activeFileId={activeFileId}
@@ -88,4 +101,20 @@ export default function Layout({ children }: LayoutProps) {
       </div>
     </div>
   );
-} 
+}
+
+const getProjectName = (projectPath: string): string => {
+  // Mapear caminhos para nomes de arquivos específicos da sidebar
+  const pathToNameMap: Record<string, string> = {
+    'about': 'about-me.ts',
+    'contact': 'contact.ts',
+    'backend': 'backend-api.ts',
+    'devops': 'devops-pipeline.ts',
+    'ai': 'ai-project.ts',
+    'tech': 'tech-stack.ts',
+    'tools': 'tools.ts',
+    // Adicione outros mapeamentos conforme necessário
+  };
+  
+  return pathToNameMap[projectPath] || `${projectPath}.ts`;
+}; 

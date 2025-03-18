@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Portfólio Matrix",
-  description: "Portfólio estilo Matrix/VSCode",
+  title: "Dev Pad",
+  description: "ilan Portfolio/VSCode",
 };
 
 export default function RootLayout({
