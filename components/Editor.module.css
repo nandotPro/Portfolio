@@ -154,4 +154,24 @@
   font-size: 18px;
   color: rgba(180, 180, 180, 0.3);
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Adicione estes estilos para os ícones nas abas */
+.tabIcon {
+  margin-right: 6px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconTS {
+  color: #3ac9fe; /* Azul mais vivo para TypeScript */
+}
+
+.tabContent {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
 } 
