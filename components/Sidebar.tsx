@@ -4,7 +4,7 @@ import { useState } from 'react';
 import styles from './Sidebar.module.css';
 
 interface SidebarProps {
-  setActiveProject: (project: string | null) => void;
+  setActiveProject: (project: string) => void;
 }
 
 type SectionName = 'about' | 'skills' | 'projects';
@@ -29,6 +29,10 @@ export default function Sidebar({ setActiveProject }: SidebarProps) {
     });
   };
 
+  const handleFileClick = (projectId: string) => {
+    setActiveProject(projectId);
+  };
+
   return (
     <div className={styles.sidebar}>
       <div className={styles.explorerHeader}>
@@ -40,10 +44,10 @@ export default function Sidebar({ setActiveProject }: SidebarProps) {
       </div>
       {expandedSections.about && (
         <div className={styles.fileList}>
-          <div className={styles.file} onClick={() => setActiveProject('about')}>
+          <div className={styles.file} onClick={() => handleFileClick('about')}>
             📄 sobre.js
           </div>
-          <div className={styles.file} onClick={() => setActiveProject('contact')}>
+          <div className={styles.file} onClick={() => handleFileClick('contact')}>
             📄 contato.js
           </div>
         </div>
@@ -54,10 +58,10 @@ export default function Sidebar({ setActiveProject }: SidebarProps) {
       </div>
       {expandedSections.skills && (
         <div className={styles.fileList}>
-          <div className={styles.file} onClick={() => setActiveProject('frontend')}>
+          <div className={styles.file} onClick={() => handleFileClick('frontend')}>
             📄 frontend.js
           </div>
-          <div className={styles.file} onClick={() => setActiveProject('backend')}>
+          <div className={styles.file} onClick={() => handleFileClick('backend')}>
             📄 backend.js
           </div>
         </div>
@@ -72,7 +76,7 @@ export default function Sidebar({ setActiveProject }: SidebarProps) {
             <div 
               key={project.id} 
               className={styles.file}
-              onClick={() => setActiveProject(project.id)}
+              onClick={() => handleFileClick(project.id)}
             >
               📄 {project.name}.js
             </div>

@@ -6,6 +6,10 @@ import { useEffect, useState, useRef } from 'react';
 interface CodeContentProps {
   activeSection: string | null;
   onContentChange?: (lineCount: number) => void;
+  onLineAnimation?: (currentLine: number) => void;
+  onAnimationComplete?: (content: any) => void;
+  skipAnimation?: boolean;
+  cachedContent?: any;
 }
 
 type CodeLine = {
@@ -13,13 +17,37 @@ type CodeLine = {
   class: string;
 };
 
-export default function CodeContent({ activeSection, onContentChange }: CodeContentProps) {
+export default function CodeContent({ 
+  activeSection, 
+  onContentChange,
+  onLineAnimation, 
+  onAnimationComplete,
+  skipAnimation,
+  cachedContent
+}: CodeContentProps) {
   const [content, setContent] = useState<CodeLine[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const currentIndexRef = useRef(0);
+  
+  // Use uma ref para armazenar o estado "já finalizado" e evitar retriggering do efeito
+  const animationCompletedRef = useRef(false);
 
   useEffect(() => {
+    // Reset do estado de animação completada quando muda a seção
+    animationCompletedRef.current = false;
+    
+    // Se temos conteúdo em cache e devemos pular a animação, usá-lo
+    if (skipAnimation && cachedContent) {
+      setContent(cachedContent);
+      if (onContentChange) {
+        onContentChange(cachedContent.length);
+      }
+      // Notifica que a animação foi "concluída" (mesmo que não tenha ocorrido)
+      animationCompletedRef.current = true;
+      return; // Sair cedo sem configurar animação
+    }
+
     // Definir um array vazio como fallback
     let codeContent: CodeLine[] = [];
     
@@ -115,7 +143,7 @@ export default function CodeContent({ activeSection, onContentChange }: CodeCont
       onContentChange(codeContent.length);
     }
 
-    // Reset typing animation when changing sections
+    // Reset typing animation
     setContent([]);
     currentIndexRef.current = 0;
     setIsTyping(true);
@@ -123,13 +151,16 @@ export default function CodeContent({ activeSection, onContentChange }: CodeCont
     // Limpa qualquer intervalo anterior
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
+      intervalRef.current = null;
     }
 
-    intervalRef.current = setInterval(() => {
+    const typingSpeed = 50; // Velocidade da digitação
+
+    // Configurar o novo intervalo para animação de digitação
+    const interval = setInterval(() => {
       if (currentIndexRef.current < codeContent.length) {
         const currentLine = codeContent[currentIndexRef.current];
         
-        // Verificar se a linha existe antes de tentar acessar suas propriedades
         if (currentLine) {
           setContent(prev => [
             ...prev, 
@@ -138,29 +169,42 @@ export default function CodeContent({ activeSection, onContentChange }: CodeCont
               class: currentLine.class || ''
             }
           ]);
-        } else {
-          // Se a linha não existir, adicionar uma linha vazia
-          setContent(prev => [
-            ...prev,
-            { text: '', class: '' }
-          ]);
+          
+          // Notificar sobre a linha atual da animação
+          if (onLineAnimation) {
+            onLineAnimation(currentIndexRef.current + 1);
+          }
         }
         
         currentIndexRef.current += 1;
       } else {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
+        // Limpar o intervalo quando a animação terminar
+        clearInterval(interval);
         setIsTyping(false);
+        
+        // Verificar se já notificamos sobre a conclusão
+        if (!animationCompletedRef.current) {
+          animationCompletedRef.current = true;
+          
+          // Notificar que a animação foi concluída
+          if (onAnimationComplete) {
+            onAnimationComplete(codeContent);
+          }
+        }
       }
-    }, 50); // Velocidade da digitação
+    }, typingSpeed);
+    
+    // Armazenar a referência ao intervalo
+    intervalRef.current = interval;
 
+    // Cleanup function
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [activeSection, onContentChange]);
+  }, [activeSection, skipAnimation]); // Remover dependências problemáticas
 
   return (
     <div className={styles.code}>

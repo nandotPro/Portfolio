@@ -11,6 +11,17 @@
   background-color: var(--background);
   height: 35px;
   border-bottom: 1px solid #1e1e1e;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #333 var(--background);
+}
+
+.tabsBar::-webkit-scrollbar {
+  height: 2px;
+}
+
+.tabsBar::-webkit-scrollbar-thumb {
+  background-color: #333;
 }
 
 .tab {
@@ -21,20 +32,46 @@
   background-color: var(--editor-bg);
   border-right: 1px solid var(--background);
   cursor: pointer;
+  color: #aaa;
+  transition: background-color 0.2s;
+  min-width: 120px;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab:hover {
+  background-color: #2a2a2a;
+}
+
+.activeTab {
+  background-color: var(--editor-bg);
   color: var(--matrix-green);
   text-shadow: 0 0 2px var(--matrix-green-glow);
+  border-bottom: 1px solid var(--matrix-green);
+  margin-bottom: -1px; /* Compensa a borda inferior */
 }
 
 .closeTab {
   margin-left: 10px;
   opacity: 0.5;
   transition: all 0.2s;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
 }
 
 .closeTab:hover {
   opacity: 1;
   color: #ff5555;
   text-shadow: 0 0 3px rgba(255,0,0,0.3);
+  background-color: rgba(255, 85, 85, 0.1);
+  border-radius: 3px;
 }
 
 .editorContainer {
@@ -75,4 +112,45 @@
   padding-left: 10px;
   display: flex;
   flex-direction: column;
+}
+
+.welcomeScreen {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--editor-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcomeScreen::before {
+  content: none;
+}
+
+.welcomeText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.welcomeTitle {
+  font-size: 48px;
+  font-weight: bold;
+  color: rgba(180, 180, 180, 0.15);
+  text-shadow: 0 0 15px rgba(180, 180, 180, 0.1);
+  margin-bottom: 20px;
+  letter-spacing: 5px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.welcomeSubtitle {
+  font-size: 18px;
+  color: rgba(180, 180, 180, 0.3);
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 } 
