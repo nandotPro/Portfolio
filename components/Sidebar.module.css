@@ -5,6 +5,7 @@
   border-right: 1px solid #1e1e1e;
   padding-top: 10px;
   height: 100%;
+  z-index: 10;
 }
 
 .explorerHeader {
@@ -48,4 +49,15 @@
   background-color: #1e1e1e;
   color: var(--matrix-green);
   text-shadow: 0 0 3px var(--matrix-green-glow);
+}
+
+/* Regra de mídia para dispositivos móveis */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid #1e1e1e;
+  }
 } 
