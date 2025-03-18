@@ -8,12 +8,23 @@
 }
 
 .codeLine {
-  height: 24px;
   white-space: pre;
-  display: flex;
-  align-items: center;
+  height: 24px;
+  line-height: 24px;
   padding: 0;
   margin: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+}
+
+.codeLine span {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding-top: 0;
+  transform: translateY(-1px);
 }
 
 .cursor {
@@ -76,5 +87,56 @@
 }
 
 .object {
+  color: var(--variable-color);
+}
+
+.codeContentWrapper {
+  padding: 0 0 10px 0;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-color);
+  overflow-x: auto;
+  min-height: 100%;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background-color: var(--matrix-green);
+  vertical-align: middle;
+  margin-left: 2px;
+  box-shadow: 0 0 5px var(--matrix-green), 0 0 10px var(--matrix-green-glow);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Estilos para syntax highlighting */
+.keyword {
+  color: var(--keyword-color);
+}
+
+.string {
+  color: var(--string-color);
+}
+
+.comment {
+  color: var(--comment-color);
+}
+
+.function {
+  color: var(--function-color);
+}
+
+.variable {
+  color: var(--variable-color);
+}
+
+.default {
   color: var(--text-color);
 } 

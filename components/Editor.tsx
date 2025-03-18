@@ -1,17 +1,16 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import styles from './Editor.module.css';
 import ProjectPreview from './ProjectPreview';
 import CodeContent from './CodeContent';
-import { useState, useEffect, useRef } from 'react';
+import { OpenFile } from '../store/editorStore';
+import { useDragDrop } from '../hooks/useDragDrop';
+import { useEditorStore } from '../store/editorStore';
+import { DiReact } from 'react-icons/di';
+import { SiTypescript } from 'react-icons/si';
 
-interface OpenFile {
-  id: string;
-  name: string;
-  animated?: boolean;
-  content?: any;
-}
-
+// Definição da interface EditorProps que estava faltando
 interface EditorProps {
   openFiles: OpenFile[];
   activeFileId: string | null;
@@ -36,19 +35,44 @@ export default function Editor({
   children 
 }: EditorProps) {
   const [showPreview, setShowPreview] = useState(false);
-  const [lineCount, setLineCount] = useState(0);
+  const [lineCount, setLineCount] = useState(1);
   const [visibleLineCount, setVisibleLineCount] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   
-  // Estado para drag & drop
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [dropIndicatorPos, setDropIndicatorPos] = useState<number | null>(null);
-  const tabsBarRef = useRef<HTMLDivElement>(null);
-  const tabRefs = useRef<(HTMLDivElement | null)[]>([]);
+  // Use o hook personalizado de drag and drop
+  const {
+    draggingIndex,
+    dropIndicatorPos,
+    itemRefs,
+    containerRef,
+    handleDragStart,
+    handleDragOver,
+    handleTabsBarDragOver,
+    handleDragLeave,
+    handleDragEnd,
+    handleDrop
+  } = useDragDrop({
+    onReorder: (sourceIndex, targetIndex) => {
+      const reorderedFiles = [...openFiles];
+      const [movedFile] = reorderedFiles.splice(sourceIndex, 1);
+      
+      // Garante que o índice de inserção é válido
+      const validTargetIndex = Math.max(0, Math.min(targetIndex, reorderedFiles.length));
+      reorderedFiles.splice(validTargetIndex, 0, movedFile);
+      
+      onReorderFiles(reorderedFiles);
+    }
+  });
+
+  const codeAreaRef = useRef<HTMLDivElement>(null);
+
+  const { 
+    fileContents
+  } = useEditorStore();
 
   useEffect(() => {
     // Redimensionar a array de refs quando o número de abas mudar
-    tabRefs.current = tabRefs.current.slice(0, openFiles.length);
+    itemRefs.current = itemRefs.current.slice(0, openFiles.length);
     
     // Definir se deve mostrar o preview
     if (activeFileId && 
@@ -74,14 +98,35 @@ export default function Editor({
       }
       setIsAnimating(false);
     }
-  }, [activeFileId, currentFileAnimated, openFiles.length]);
+  }, [activeFileId, currentFileAnimated, openFiles.length, currentFileContent, lineCount, itemRefs]);
+
+  useEffect(() => {
+    // Garantir que os números de linha estejam alinhados com o conteúdo do código
+    const codeArea = codeAreaRef.current;
+    if (codeArea) {
+      // Ajustar a altura dos números de linha para corresponder exatamente à altura do conteúdo
+      const codeContent = codeArea.querySelector(`.${styles.codeContent}`);
+      const lineNumbers = codeArea.querySelector(`.${styles.lineNumbers}`);
+      
+      if (codeContent && lineNumbers) {
+        // Observer para ajustar a altura quando o conteúdo muda
+        const resizeObserver = new ResizeObserver(() => {
+          lineNumbers.scrollTop = codeContent.scrollTop;
+        });
+        
+        resizeObserver.observe(codeContent);
+        
+        return () => {
+          resizeObserver.disconnect();
+        };
+      }
+    }
+  }, []);
 
   const handleContentChange = (count: number) => {
-    // Só atualiza se o valor for diferente para evitar re-renders desnecessários
     if (count !== lineCount) {
       setLineCount(count);
       
-      // Se o arquivo já foi animado, atualize imediatamente
       if (currentFileAnimated) {
         setVisibleLineCount(count);
       }
@@ -89,27 +134,23 @@ export default function Editor({
   };
 
   const handleLineAnimation = (currentLine: number) => {
-    // Atualizar a contagem de linhas visíveis durante a animação
     setVisibleLineCount(currentLine);
   };
 
   const handleAnimationComplete = (content: any) => {
-    // Marcar a animação como concluída
     setIsAnimating(false);
     
-    // Notificar o componente pai sobre o conteúdo carregado
     if (activeFileId) {
       onContentLoaded(activeFileId, content, lineCount);
     }
   };
 
   const handleCloseTab = (projectId: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Impedir propagação para não ativar a aba
+    e.stopPropagation();
     onCloseProject(projectId);
   };
 
   const getFileIcon = (fileName: string) => {
-    // Verificar se é um arquivo TS
     if (fileName.endsWith('.ts')) {
       return (
         <svg className={`${styles.tabIcon} ${styles.iconTS}`} width="16" height="16" viewBox="0 0 24 24">
@@ -118,148 +159,47 @@ export default function Editor({
       );
     }
     
-    // Para outros tipos de arquivo, adicione aqui se necessário
     return null;
   };
 
-  // Funções de drag & drop
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/plain', index.toString());
-    setDraggingIndex(index);
-
-    // Adiciona um atraso para aplicar o estilo de arrasto
-    setTimeout(() => {
-      if (tabRefs.current[index]) {
-        tabRefs.current[index]?.classList.add(styles.draggingTab);
-      }
-    }, 0);
+  // Esta função será chamada pelo CodeContent para informar quantas linhas existem
+  const handleLineCountChange = (count: number) => {
+    setLineCount(Math.max(1, count));
   };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    
-    if (draggingIndex === null || draggingIndex === index) {
-      setDropIndicatorPos(null);
-      return;
-    }
-
-    // Calcula a posição do indicador de soltura
-    const targetTab = tabRefs.current[index];
-    if (targetTab && tabsBarRef.current) {
-      const tabRect = targetTab.getBoundingClientRect();
-      const mouseX = e.clientX;
-      const middleX = tabRect.left + tabRect.width / 2;
+  
+  // Efeito para sincronizar a rolagem entre números de linha e conteúdo
+  useEffect(() => {
+    const codeArea = codeAreaRef.current;
+    if (codeArea) {
+      const lineNumbers = codeArea.querySelector(`.${styles.lineNumbers}`);
+      const codeContent = codeArea.querySelector(`.${styles.codeContent}`);
       
-      // Determina se o indicador deve aparecer à esquerda ou à direita da aba
-      if (mouseX < middleX) {
-        setDropIndicatorPos(tabRect.left);
-      } else {
-        setDropIndicatorPos(tabRect.right);
-      }
-    }
-  };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    // Verifica se o mouse saiu completamente da barra de abas
-    if (tabsBarRef.current) {
-      const tabsBarRect = tabsBarRef.current.getBoundingClientRect();
-      if (
-        e.clientX < tabsBarRect.left || 
-        e.clientX > tabsBarRect.right || 
-        e.clientY < tabsBarRect.top || 
-        e.clientY > tabsBarRect.bottom
-      ) {
-        setDropIndicatorPos(null);
-      }
-    }
-  };
-
-  const handleDragEnd = () => {
-    // Limpa os estilos e estados de arrasto
-    if (draggingIndex !== null && tabRefs.current[draggingIndex]) {
-      tabRefs.current[draggingIndex]?.classList.remove(styles.draggingTab);
-    }
-    setDraggingIndex(null);
-    setDropIndicatorPos(null);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetIndex: number) => {
-    e.preventDefault();
-    
-    try {
-      const sourceIndexStr = e.dataTransfer.getData('text/plain');
-      if (!sourceIndexStr) return;
-      
-      const sourceIndex = parseInt(sourceIndexStr, 10);
-      if (isNaN(sourceIndex) || sourceIndex === targetIndex) {
-        return;
-      }
-
-      // Calcula a nova ordem das abas
-      const reorderedFiles = [...openFiles];
-      const [movedFile] = reorderedFiles.splice(sourceIndex, 1);
-      
-      // Ajuste na lógica de inserção para lidar melhor com o movimento para a direita
-      const targetTab = tabRefs.current[targetIndex];
-      if (targetTab) {
-        const tabRect = targetTab.getBoundingClientRect();
-        const mouseX = e.clientX;
-        const middleX = tabRect.left + tabRect.width / 2;
+      if (lineNumbers && codeContent) {
+        const syncScroll = () => {
+          lineNumbers.scrollTop = codeContent.scrollTop;
+        };
         
-        // Ajuste para lidar com o caso especial quando arrastando da esquerda para a direita
-        let insertionIndex = targetIndex;
-        
-        if (sourceIndex < targetIndex) {
-          // Se estamos arrastando para a direita
-          if (mouseX > middleX) {
-            // Se o mouse estiver além do meio da aba alvo, insira após ela
-            insertionIndex = targetIndex;
-          } else {
-            // Se o mouse estiver antes do meio da aba alvo, insira antes dela
-            insertionIndex = targetIndex - 1;
-          }
-        } else {
-          // Se estamos arrastando para a esquerda
-          if (mouseX < middleX) {
-            // Se o mouse estiver antes do meio da aba alvo, insira antes dela
-            insertionIndex = targetIndex;
-          } else {
-            // Se o mouse estiver além do meio da aba alvo, insira após ela
-            insertionIndex = targetIndex + 1;
-          }
-        }
-        
-        // Garante que o índice de inserção é válido
-        insertionIndex = Math.max(0, Math.min(insertionIndex, reorderedFiles.length));
-        reorderedFiles.splice(insertionIndex, 0, movedFile);
-      } else {
-        // Fallback caso o targetTab não seja encontrado
-        reorderedFiles.splice(targetIndex, 0, movedFile);
+        codeContent.addEventListener('scroll', syncScroll);
+        return () => {
+          codeContent.removeEventListener('scroll', syncScroll);
+        };
       }
-      
-      // Atualiza a ordem no componente pai
-      onReorderFiles(reorderedFiles);
-    } catch (error) {
-      console.error('Erro durante o drop:', error);
-    } finally {
-      // Sempre limpa os estados de arrasto ao final
-      handleDragEnd();
     }
-  };
+  }, []);
 
   return (
     <div className={styles.editorWrapper}>
-      <div className={styles.tabsBar} 
-        ref={tabsBarRef}
+      <div 
+        className={styles.tabsBar} 
+        ref={containerRef}
         onDragLeave={handleDragLeave}
+        onDragOver={handleTabsBarDragOver}
       >
-        {openFiles.map((file, index) => (
+        {openFiles.map((file: OpenFile, index: number) => (
           <div 
             key={file.id} 
             ref={(el: HTMLDivElement | null) => {
-              tabRefs.current[index] = el;
+              itemRefs.current[index] = el;
             }}
             className={`${styles.tab} ${activeFileId === file.id ? styles.activeTab : ''}`}
             onClick={() => onSwitchProject(file.id)}
@@ -282,12 +222,12 @@ export default function Editor({
           </div>
         ))}
         
-        {/* Indicador de local de soltura - melhorado para garantir posicionamento correto */}
-        {dropIndicatorPos !== null && tabsBarRef.current && (
+        {/* Indicador de local de soltura */}
+        {dropIndicatorPos !== null && containerRef.current && (
           <div 
             className={styles.dropIndicator} 
             style={{ 
-              left: `${dropIndicatorPos - tabsBarRef.current.getBoundingClientRect().left}px`,
+              left: `${dropIndicatorPos - containerRef.current.getBoundingClientRect().left}px`,
               height: '80%',
               top: '10%'
             }} 
@@ -297,10 +237,10 @@ export default function Editor({
       
       <div className={styles.editorContainer}>
         {activeFileId ? (
-          <div className={styles.codeArea}>
+          <div className={styles.codeArea} ref={codeAreaRef}>
             <div className={styles.lineNumbers}>
-              {/* Números de linha dinâmicos que acompanham a animação */}
-              {Array.from({ length: Math.max(1, visibleLineCount) }, (_, i) => (
+              {/* Usar o lineCount exato do conteúdo */}
+              {Array.from({ length: lineCount }, (_, i) => (
                 <div key={i} className={styles.lineNumber}>{i + 1}</div>
               ))}
             </div>
@@ -312,6 +252,7 @@ export default function Editor({
                 onAnimationComplete={handleAnimationComplete}
                 skipAnimation={currentFileAnimated}
                 cachedContent={currentFileContent}
+                onLineCountChange={handleLineCountChange}
               />
             </div>
           </div>
