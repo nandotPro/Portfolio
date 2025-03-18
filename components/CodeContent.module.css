@@ -1,0 +1,73 @@
+.code {
+  font-size: 14px;
+  line-height: 20px;
+  padding: 10px 0;
+}
+
+.codeLine {
+  height: 20px;
+  white-space: pre;
+  padding-bottom: 5px;
+}
+
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  background-color: var(--matrix-green);
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  box-shadow: 0 0 5px var(--matrix-green), 0 0 10px var(--matrix-green-glow);
+}
+
+.comment {
+  color: var(--comment-color);
+}
+
+.keyword {
+  color: var(--keyword-color);
+}
+
+.string {
+  color: var(--string-color);
+}
+
+.function {
+  color: var(--function-color);
+  text-shadow: 0 0 2px var(--matrix-green-glow);
+}
+
+.property {
+  color: var(--variable-color);
+}
+
+.method {
+  color: var(--method-color);
+  text-shadow: 0 0 2px var(--matrix-green-glow);
+}
+
+.class {
+  color: var(--class-color);
+  text-shadow: 0 0 2px var(--matrix-green-glow);
+}
+
+.import {
+  color: var(--import-color);
+}
+
+.const {
+  color: var(--keyword-color);
+}
+
+.console {
+  color: var(--matrix-green);
+  text-shadow: 0 0 3px var(--matrix-green), 0 0 5px var(--matrix-green-glow);
+}
+
+.return {
+  color: var(--keyword-color);
+}
+
+.object {
+  color: var(--text-color);
+} 

@@ -1,0 +1,11 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.editorContainer {
+  display: flex;
+  flex: 1;
+  height: 100vh;
+} 
