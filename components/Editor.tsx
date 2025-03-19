@@ -16,6 +16,7 @@ import {
   Hexagon,
   Info
 } from 'lucide-react';
+import { getContentByFileName, hasContent } from '../content/contentManager';
 
 // Lazy loading do componente CodeContent
 const CodeContent = dynamic(() => import('./CodeContent'), {
@@ -66,7 +67,7 @@ export default function Editor({
 }: EditorProps) {
   const [showPreview, setShowPreview] = useState(false);
   const [lineCount, setLineCount] = useState(1);
-  const [visibleLineCount, setVisibleLineCount] = useState(0);
+  const [visibleLineCount, setVisibleLineCount] = useState(1);
   const [isAnimating, setIsAnimating] = useState(false);
   
   // Usar o hook de gerenciamento de abas
@@ -112,14 +113,14 @@ export default function Editor({
       setIsAnimating(true);
     } else {
       // Se já foi animado, mostrar todas as linhas imediatamente
-      if (currentFileContent && currentFileContent.length > 0) {
+      if (currentFileContent && Array.isArray(currentFileContent)) {
         setVisibleLineCount(currentFileContent.length);
       } else if (lineCount > 0) {
         setVisibleLineCount(lineCount);
       }
       setIsAnimating(false);
     }
-  }, [activeFileId, currentFileAnimated, openFiles.length, currentFileContent, lineCount, itemRefs]);
+  }, [activeFileId, currentFileAnimated, openFiles.length, currentFileContent, lineCount]);
 
   useEffect(() => {
     // Verificar se o navegador suporta ResizeObserver
@@ -160,6 +161,7 @@ export default function Editor({
   };
 
   const handleLineAnimation = (currentLine: number) => {
+    // Incrementar para mostrar todas as linhas até a atual + 1 (para incluir a próxima linha que está sendo digitada)
     setVisibleLineCount(currentLine + 1);
   };
 
@@ -195,6 +197,44 @@ export default function Editor({
       }
     }
   }, []);
+
+  // Adicionar este useEffect para garantir que os números de linha sejam sincronizados
+  useEffect(() => {
+    const codeArea = codeAreaRef.current;
+    if (codeArea) {
+      const lineNumbers = codeArea.querySelector(`.${styles.lineNumbers}`);
+      const codeContent = codeArea.querySelector(`.${styles.codeContent}`);
+      
+      if (lineNumbers && codeContent) {
+        // Forçar um reflow/repaint
+        lineNumbers.scrollTop = codeContent.scrollTop;
+      }
+    }
+  }, [visibleLineCount]); // Adicionar visibleLineCount como dependência
+
+  // Função para renderizar o conteúdo do arquivo ativo
+  const renderContent = () => {
+    if (!activeFileId) return null;
+    
+    const activeFile = openFiles.find(file => file.id === activeFileId);
+    if (!activeFile) return null;
+    
+    // Verificar se temos conteúdo personalizado para este arquivo
+    const customContent = getContentByFileName(activeFile.name);
+    
+    return (
+      <CodeContent 
+        activeSection={activeFileId}
+        customContent={customContent || undefined}
+        onContentChange={handleContentChange}
+        onLineAnimation={handleLineAnimation}
+        onAnimationComplete={handleAnimationComplete}
+        skipAnimation={currentFileAnimated}
+        cachedContent={currentFileContent}
+        onLineCountChange={handleLineCountChange}
+      />
+    );
+  };
 
   return (
     <div className={styles.editorWrapper}>
@@ -259,15 +299,7 @@ export default function Editor({
               ))}
             </div>
             <div className={styles.codeContent}>
-              <CodeContent 
-                activeSection={activeFileId}
-                onContentChange={handleContentChange}
-                onLineAnimation={handleLineAnimation}
-                onAnimationComplete={handleAnimationComplete}
-                skipAnimation={currentFileAnimated}
-                cachedContent={currentFileContent}
-                onLineCountChange={handleLineCountChange}
-              />
+              {renderContent()}
             </div>
           </div>
         ) : (

@@ -1,6 +1,6 @@
 # CodeFolio by ILAN
 
-Um clone do VSCode criado com Next.js que simula a interface do editor para apresentar projetos como um portfólio.
+A simple code editor clone made with Next.js that simulates the editor interface showing information like a portfolio.
 
 ## Tecnologias
 

@@ -1,7 +1,12 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { CodeLine } from '../components/CodeContent';
 import { useI18nStore } from '../i18n/i18n';
+
+// Definir a interface CodeLine aqui em vez de importá-la
+export interface CodeLine {
+  text: string;
+  type?: 'keyword' | 'string' | 'comment' | 'function' | 'variable' | 'default' | 'object';
+}
 
 export interface FileNode {
   id: string;
@@ -147,3 +152,36 @@ export const useEditorStore = create<EditorState>()(
     }
   }))
 );
+
+// Certifique-se de que estes arquivos estejam presentes no fileTree
+const initialFileTree: FileNode = {
+  id: 'root',
+  name: 'portfolio',
+  path: '/',
+  isFolder: true,
+  isOpen: true,
+  children: [
+    {
+      id: 'readme',
+      name: 'README.md',
+      path: '/README.md',
+      isFolder: false,
+      fileType: 'md'
+    },
+    {
+      id: 'about',
+      name: 'about.json',
+      path: '/about.json',
+      isFolder: false,
+      fileType: 'json'
+    },
+    {
+      id: 'contact',
+      name: 'contact.ts',
+      path: '/contact.ts',
+      isFolder: false,
+      fileType: 'ts'
+    },
+    // ... outros arquivos existentes ...
+  ]
+};

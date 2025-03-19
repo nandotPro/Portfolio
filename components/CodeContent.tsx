@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import styles from './CodeContent.module.css';
-import { useCodeRenderer } from '../hooks/useCodeRenderer';
+import styles from './Editor.module.css';
+import { ContentItem } from '../content/contentManager';
+import { useCodeAnimation } from '../hooks/useCodeAnimation';
 
 export interface CodeLine {
   text: string;
@@ -11,60 +12,77 @@ export interface CodeLine {
 
 interface CodeContentProps {
   activeSection: string;
-  onLineCountChange: (count: number) => void;
+  customContent?: ContentItem[];
   onContentChange?: (count: number) => void;
-  onLineAnimation?: (lineNumber: number) => void;
-  onAnimationComplete?: (content: CodeLine[]) => void;
+  onLineAnimation?: (lineIndex: number) => void;
+  onAnimationComplete?: (content: any) => void;
   skipAnimation?: boolean;
-  cachedContent?: CodeLine[];
+  cachedContent?: any;
+  onLineCountChange?: (count: number) => void;
 }
 
-const CodeContent: React.FC<CodeContentProps> = ({ 
-  activeSection, 
-  onLineCountChange,
+export default function CodeContent({
+  customContent,
   onContentChange,
-  onLineAnimation, 
   onAnimationComplete,
+  onLineAnimation,
   skipAnimation = false,
-  cachedContent
-}) => {
+  onLineCountChange
+}: CodeContentProps) {
   const {
-    displayedLines,
-    isTyping,
-    lineCount
-  } = useCodeRenderer({
-    activeSection,
+    lines,
+    lineTypes,
+    visibleLineCount,
+    isAnimating
+  } = useCodeAnimation({
+    content: customContent || null,
     skipAnimation,
-    cachedContent,
-    onContentChange,
-    onLineAnimation,
+    onLineCountChange,
     onAnimationComplete
   });
 
+  // Relatar mudanças na contagem de linhas
   React.useEffect(() => {
-    onLineCountChange(lineCount);
-  }, [lineCount, onLineCountChange]);
-  
-  React.useEffect(() => {
-    if (displayedLines.length > 0 && onLineAnimation) {
-      onLineAnimation(displayedLines.length - 1);
+    if (onContentChange) {
+      onContentChange(lines.length);
     }
-  }, [displayedLines.length, onLineAnimation]);
+  }, [lines.length, onContentChange]);
+
+  // Relatar linhas visíveis
+  React.useEffect(() => {
+    if (onLineAnimation && visibleLineCount > 0) {
+      onLineAnimation(visibleLineCount - 1);
+    }
+  }, [visibleLineCount, onLineAnimation]);
+
+  // Renderização de cada linha com base no tipo
+  const renderLine = (line: string, index: number) => {
+    const type = lineTypes[index] || 'normal';
+    
+    switch (type) {
+      case 'link':
+        return <span className={styles.linkText}>{line}</span>;
+      case 'comment':
+        return <span className={styles.commentText}>{line}</span>;
+      case 'keyword':
+        return <span className={styles.keywordText}>{line}</span>;
+      case 'string':
+        return <span className={styles.stringText}>{line}</span>;
+      default:
+        return <span className={styles.plainText}>{line}</span>;
+    }
+  };
   
   return (
     <div className={styles.codeContentWrapper}>
-      {displayedLines.map((line, index) => (
-        <div key={`${activeSection}-line-${index}`} className={styles.codeLine}>
-          <span className={line?.type && styles[line.type] ? styles[line.type] : ''}>
-            {line?.text || ''}
-          </span>
-          {index === displayedLines.length - 1 && isTyping && (
+      {lines.map((line, index) => (
+        <div key={index} className={styles.codeLine}>
+          {renderLine(line, index)}
+          {index === lines.length - 1 && isAnimating && (
             <span className={styles.cursor} />
           )}
         </div>
       ))}
     </div>
   );
-};
-
-export default CodeContent; 
+} 

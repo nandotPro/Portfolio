@@ -346,4 +346,72 @@
   background-color: rgba(255, 255, 255, 0.05);
   transform: translateY(-1px);
   transition: background-color 0.2s ease, transform 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+/* Estilos para diferentes tipos de texto */
+.plainText {
+  color: #ffffff;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.linkText {
+  color: #4da3ff; /* Cor de link no VSCode */
+  text-decoration: underline;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.commentText {
+  color: #6a9955; /* Verde para comentários */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.keywordText {
+  color: #569cd6; /* Azul para palavras-chave */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.stringText {
+  color: #ce9178; /* Laranja para strings */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Estilos para o container de conteúdo */
+.codeContentWrapper {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  padding: 8px 0;
+  white-space: pre;
+  tab-size: 2;
+  overflow-x: auto;
+}
+
+.codeLine {
+  padding: 0 8px;
+  min-height: 20px;
+  line-height: 20px;
+}
+
+/* Adicionar estilo para o cursor piscante */
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background-color: #ffffff;
+  animation: blink 1s step-end infinite;
+  margin-left: 1px;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 } 
