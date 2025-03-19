@@ -6,16 +6,16 @@
   height: 100%;
 }
 
-.tabsBar {
+.tabs {
   display: flex;
-  background-color: var(--background);
-  height: 35px;
-  border-bottom: 1px solid #1e1e1e;
+  flex-direction: row;
+  flex-wrap: nowrap;
   overflow-x: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #333 var(--background);
+  white-space: nowrap;
+  height: 35px;
+  background-color: var(--editor-bg);
+  border-bottom: 1px solid #1e1e1e;
   position: relative;
-  z-index: 1;
 }
 
 .tabsBar::-webkit-scrollbar {
@@ -27,55 +27,50 @@
 }
 
 .tab {
-  padding: 0 15px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  font-size: 13px;
-  background-color: var(--editor-bg);
-  border-right: 1px solid var(--background);
+  justify-content: space-between;
+  padding: 0 8px 0 12px;
+  height: 100%;
+  border-right: 1px solid #1e1e1e;
   cursor: pointer;
-  color: #aaa;
-  transition: background-color 0.2s;
+  background-color: var(--editor-bg);
   min-width: 120px;
   max-width: 200px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  height: 35px;
-  user-select: none;
+  transition: background-color 0.2s;
 }
 
 .tab:hover {
-  background-color: #2a2a2a;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .activeTab {
-  background-color: var(--editor-bg);
-  color: #ffffff;
-  border-bottom: 1px solid #1e8ad6;
-  margin-bottom: -1px;
-  font-weight: 500;
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #4d78cc;
 }
 
-.closeTab {
-  margin-left: 10px;
-  opacity: 0.5;
-  transition: all 0.2s;
-  cursor: pointer;
-  font-size: 16px;
+.tabTitle {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.closeButton {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 16px;
   height: 16px;
+  border-radius: 3px;
+  transition: color 0.2s;
+  font-size: 14px;
 }
 
-.closeTab:hover {
-  opacity: 1;
-  color: #ff5555;
-  text-shadow: 0 0 3px rgba(255,0,0,0.3);
-  background-color: rgba(255, 85, 85, 0.1);
-  border-radius: 3px;
+.closeButton:hover {
+  background-color: transparent;
+  color: #ff6b6b;
 }
 
 .editorContainer {
@@ -180,7 +175,12 @@
 }
 
 .iconTS {
-  color: #3ac9fe; /* Azul mais vivo para TypeScript */
+  color: #3ac9fe; /* Azul para TypeScript */
+}
+
+/* Novo estilo para o ícone React */
+.iconReact {
+  color: #61dafb; /* Azul claro característico do React */
 }
 
 .tabContent {
@@ -201,15 +201,17 @@
 
 /* Indicador de local de soltura */
 .dropIndicator {
-  width: 2px;
-  height: 80%;
-  background-color: #0078d7;
   position: absolute;
-  top: 10%;
-  transition: left 0.1s ease;
-  pointer-events: none;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #4d78cc;
+  box-shadow: 0 0 4px rgba(77, 120, 204, 0.6);
   z-index: 10;
-  box-shadow: 0 0 3px rgba(0, 120, 215, 0.5);
+  pointer-events: none;
+  transition: opacity 0.2s;
+  /* Importante: garantir que o indicador fique contido na área das abas */
+  max-height: 35px; /* igual à altura das abas */
 }
 
 /* Atualização para o CodeContent.module.css */
@@ -259,4 +261,26 @@
   background-color: #555;
   border-radius: 5px;
   border: 2px solid var(--editor-bg);
+}
+
+/* Adicione ao Editor.module.css */
+.tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  height: 35px;
+  background-color: var(--editor-bg);
+  border-bottom: 1px solid #1e1e1e;
+  position: relative; /* Necessário para posicionamento absoluto do indicador */
+}
+
+/* Estilo para destacar a área de destino durante o drag */
+.dragOverLeft {
+  box-shadow: inset 2px 0 0 0 #4d78cc;
+}
+
+.dragOverRight {
+  box-shadow: inset -2px 0 0 0 #4d78cc;
 } 

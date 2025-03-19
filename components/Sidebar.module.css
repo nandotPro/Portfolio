@@ -15,21 +15,54 @@
 .explorerHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 4px 12px;
-  color: #bbbbbb;
+  padding: 0 16px;
+  height: 35px;
+  font-weight: bold;
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
   text-transform: uppercase;
-  background-color: var(--sidebar-bg);
-  height: 30px;
+  letter-spacing: 1px;
+  color: #8c8c8c;
+  border-bottom: 1px solid #1e1e1e;
+  position: relative;
 }
 
 .explorerActions {
+  position: absolute;
+  right: 12px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
+}
+
+.fakeButton {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #858585;
+  cursor: pointer;
+  transition: color 0.2s;
+  background: transparent;
+  border-radius: 3px;
+}
+
+.fakeButton:hover {
+  color: #ffffff;
+  background-color: #383838;
+}
+
+/* Remover as regras específicas para os ícones macOS que não são mais necessárias */
+.fakeButton:nth-child(1),
+.fakeButton:nth-child(2),
+.fakeButton:nth-child(3) {
+  background-color: transparent;
+}
+
+.fakeButton:nth-child(1):hover::after,
+.fakeButton:nth-child(2):hover::after,
+.fakeButton:nth-child(3):hover::after {
+  content: none;
 }
 
 .actionButton {

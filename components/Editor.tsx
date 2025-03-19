@@ -9,6 +9,7 @@ import { useDragDrop } from '../hooks/useDragDrop';
 import { useEditorStore } from '../store/editorStore';
 import { DiReact } from 'react-icons/di';
 import { SiTypescript } from 'react-icons/si';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Definição da interface EditorProps que estava faltando
 interface EditorProps {
@@ -74,6 +75,8 @@ export default function Editor({
     // Redimensionar a array de refs quando o número de abas mudar
     itemRefs.current = itemRefs.current.slice(0, openFiles.length);
     
+    // Remover ou comentar este trecho
+    /*
     // Definir se deve mostrar o preview
     if (activeFileId && 
         activeFileId !== 'about' && 
@@ -84,6 +87,9 @@ export default function Editor({
     } else {
       setShowPreview(false);
     }
+    */
+    // Sempre definir como false
+    setShowPreview(false);
     
     // Resetar contagem de linhas visíveis ao trocar arquivo
     if (!currentFileAnimated) {
@@ -146,7 +152,7 @@ export default function Editor({
   };
 
   const handleCloseTab = (projectId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Impede que o clique propague para a aba
     onCloseProject(projectId);
   };
 
@@ -189,59 +195,75 @@ export default function Editor({
 
   return (
     <div className={styles.editorWrapper}>
-      <div 
-        className={styles.tabsBar} 
-        ref={containerRef}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleTabsBarDragOver}
-      >
-        {openFiles.map((file: OpenFile, index: number) => (
-          <div 
-            key={file.id} 
-            ref={(el: HTMLDivElement | null) => {
-              itemRefs.current[index] = el;
-            }}
-            className={`${styles.tab} ${activeFileId === file.id ? styles.activeTab : ''}`}
-            onClick={() => onSwitchProject(file.id)}
-            draggable={true}
-            onDragStart={(e) => handleDragStart(e, index)}
-            onDragOver={(e) => handleDragOver(e, index)}
-            onDragEnd={handleDragEnd}
-            onDrop={(e) => handleDrop(e, index)}
-          >
-            <div className={styles.tabContent}>
-              {getFileIcon(file.name.endsWith('.js') ? file.name.replace('.js', '.ts') : file.name)}
-              <span>{file.name.endsWith('.js') ? file.name.replace('.js', '.ts') : file.name}</span>
-            </div>
-            <span 
-              className={styles.closeTab} 
-              onClick={(e) => handleCloseTab(file.id, e)}
-            >
-              ×
-            </span>
-          </div>
-        ))}
-        
-        {/* Indicador de local de soltura */}
-        {dropIndicatorPos !== null && containerRef.current && (
-          <div 
-            className={styles.dropIndicator} 
-            style={{ 
-              left: `${dropIndicatorPos - containerRef.current.getBoundingClientRect().left}px`,
-              height: '80%',
-              top: '10%'
-            }} 
-          />
-        )}
+      <div className={styles.tabsContainer}>
+        <div 
+          className={styles.tabs}
+          ref={containerRef}
+          onDragOver={handleTabsBarDragOver as any}
+        >
+          <AnimatePresence>
+            {openFiles.map((file, index) => (
+              <motion.div
+                key={file.id}
+                className={`${styles.tab} ${activeFileId === file.id ? styles.activeTab : ''}`}
+                onClick={() => onSwitchProject(file.id)}
+                ref={el => {
+                  itemRefs.current[index] = el;
+                }}
+                draggable
+                onDragStart={(e: any) => handleDragStart(e, index)}
+                onDragOver={(e: any) => handleDragOver(e, index)}
+                onDragEnd={handleDragEnd as any}
+                onDragLeave={handleDragLeave as any}
+                onDrop={(e: any) => handleDrop(e, index)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <span className={styles.tabIcon}>
+                  {file.id.endsWith('.ts') ? 
+                    <SiTypescript className={styles.iconTS} /> : 
+                    <DiReact className={styles.iconReact} />}
+                </span>
+                <span className={styles.tabTitle}>{file.name}</span>
+                <span 
+                  className={styles.closeButton}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCloseTab(file.id, e);
+                  }}
+                >
+                  ×
+                </span>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          
+          {dropIndicatorPos !== null && (
+            <div 
+              className={styles.dropIndicator} 
+              style={{ left: `${dropIndicatorPos}px` }}
+            />
+          )}
+        </div>
       </div>
-      
+
       <div className={styles.editorContainer}>
         {activeFileId ? (
-          <div className={styles.codeArea} ref={codeAreaRef}>
+          <div 
+            key={activeFileId}
+            className={styles.codeArea}
+            ref={codeAreaRef}
+          >
             <div className={styles.lineNumbers}>
-              {/* Usar o lineCount exato do conteúdo */}
-              {Array.from({ length: lineCount }, (_, i) => (
-                <div key={i} className={styles.lineNumber}>{i + 1}</div>
+              {Array.from({ length: Math.max(1, visibleLineCount) }, (_, i) => (
+                <div 
+                  key={i} 
+                  className={styles.lineNumber}
+                >
+                  {i + 1}
+                </div>
               ))}
             </div>
             <div className={styles.codeContent}>
@@ -259,14 +281,10 @@ export default function Editor({
         ) : (
           <div className={styles.welcomeScreen}>
             <div className={styles.welcomeText}>
-              <span className={styles.welcomeTitle}>Portfolio by ILAN</span>
-              <span className={styles.welcomeSubtitle}>Select a file to start</span>
+              <h1 className={styles.welcomeTitle}>Portfolio by ILAN</h1>
+              <p className={styles.welcomeSubtitle}>select a file to start</p>
             </div>
           </div>
-        )}
-
-        {showPreview && (
-          <ProjectPreview projectId={activeFileId} />
         )}
       </div>
     </div>

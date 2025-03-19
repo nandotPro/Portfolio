@@ -60,7 +60,6 @@ const CodeContent: React.FC<CodeContentProps> = ({
     
     // Verificação explícita: se temos conteúdo em cache E skipAnimation está ligado
     if (skipAnimation && cachedContent && cachedContent.length > 0) {
-      console.log("Usando conteúdo em cache:", cachedContent.length, "linhas");
       setContent(cachedContent);
       setDisplayedLines(cachedContent);
       if (contentChangeRef.current) contentChangeRef.current(cachedContent.length);
@@ -76,7 +75,6 @@ const CodeContent: React.FC<CodeContentProps> = ({
     
     // Obter o conteúdo para a seção ativa
     const sectionContent = getContentForSection(activeSection);
-    console.log("Obtendo novo conteúdo para", activeSection, ":", sectionContent.length, "linhas");
     setContent(sectionContent);
     
     // Se formos pular a animação, mostrar tudo de uma vez

@@ -43,7 +43,6 @@ export default function Layout({ children }: LayoutProps) {
     openFiles.forEach(file => {
       // Comparar o idioma armazenado com o atual
       if (!file.language || file.language !== currentLanguage) {
-        console.log("Resetando animação para", file.id, "devido à mudança de idioma");
         resetAnimationState(file.id);
       }
     });

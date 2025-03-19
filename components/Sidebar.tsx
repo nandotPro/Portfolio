@@ -7,7 +7,7 @@ import { useEditorStore, FileNode } from '../store/editorStore';
 import { useI18nStore } from '../i18n/i18n';
 import VirtualizedTree from './VirtualizedTree';
 // Importação de ícones
-import { VscFolder, VscFolderOpened, VscChevronRight, VscChevronDown, VscFile } from 'react-icons/vsc';
+import { VscFolder, VscFolderOpened, VscChevronRight, VscChevronDown, VscFile, VscNewFile, VscNewFolder, VscRefresh } from 'react-icons/vsc';
 import { SiTypescript } from 'react-icons/si';
 import { DiJavascript1 } from 'react-icons/di';
 
@@ -60,20 +60,28 @@ const FileTreeItem = memo(({
           <span className={styles.itemName}>{node.name}</span>
         </div>
         
-        {node.isOpen && node.children && (
-          <div className={styles.folderContents}>
-            {node.children.map((child) => (
-              <FileTreeItem
-                key={child.id}
-                node={child}
-                level={level + 1}
-                onToggleFolder={onToggleFolder}
-                onFileClick={onFileClick}
-                activeFileId={activeFileId}
-              />
-            ))}
-          </div>
-        )}
+        <AnimatePresence>
+          {node.isOpen && node.children && (
+            <motion.div 
+              className={styles.folderContents}
+              initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
+              animate={{ height: 'auto', opacity: 1, overflow: 'visible' }}
+              exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
+              transition={{ duration: 0.2 }}
+            >
+              {node.children.map((child) => (
+                <FileTreeItem
+                  key={child.id}
+                  node={child}
+                  level={level + 1}
+                  onToggleFolder={onToggleFolder}
+                  onFileClick={onFileClick}
+                  activeFileId={activeFileId}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   }
@@ -88,20 +96,24 @@ const FileTreeItem = memo(({
       <span className={styles.itemName}>{node.name}</span>
     </div>
   );
-}, (prevProps, nextProps) => {
-  // Lógica personalizada para definir quando o componente deve re-renderizar
-  return (
-    prevProps.node.isOpen === nextProps.node.isOpen &&
-    prevProps.activeFileId === nextProps.activeFileId &&
-    // Se o nó for o ativo, forçar re-renderização
-    (prevProps.node.id !== prevProps.activeFileId && prevProps.node.id !== nextProps.activeFileId)
-  );
 });
+
+FileTreeItem.displayName = 'FileTreeItem';
 
 // Componente principal de Sidebar também memoizado
 const Sidebar = () => {
-  const { fileTree } = useEditorStore();
+  const { 
+    fileTree, 
+    openProject, 
+    toggleFolder, 
+    activeFileId 
+  } = useEditorStore();
+  
   const { t } = useI18nStore();
+
+  const handleFileClick = (filePath: string, fileId: string, fileName: string) => {
+    openProject(filePath, fileId, fileName);
+  };
   
   if (!fileTree) return <div className={styles.sidebar}>Carregando...</div>;
 
@@ -109,9 +121,26 @@ const Sidebar = () => {
     <div className={styles.sidebar}>
       <div className={styles.explorerHeader}>
         <span>{t('ui.explorer')}</span>
+        <div className={styles.explorerActions}>
+          <div className={styles.fakeButton}>
+            <VscNewFile size={16} />
+          </div>
+          <div className={styles.fakeButton}>
+            <VscNewFolder size={16} />
+          </div>
+          <div className={styles.fakeButton}>
+            <VscRefresh size={16} />
+          </div>
+        </div>
       </div>
       <div className={styles.treeContainer}>
-        <VirtualizedTree />
+        <FileTreeItem
+          node={fileTree}
+          level={0}
+          onToggleFolder={toggleFolder}
+          onFileClick={handleFileClick}
+          activeFileId={activeFileId}
+        />
       </div>
     </div>
   );
