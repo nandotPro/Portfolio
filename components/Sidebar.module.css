@@ -2,6 +2,7 @@
   width: 250px;
   background-color: var(--sidebar-bg);
   overflow-y: auto;
+  overflow-x: hidden;
   border-right: 1px solid #1e1e1e;
   height: 100%;
   z-index: 10;
@@ -111,6 +112,8 @@
   text-overflow: ellipsis;
   position: relative;
   height: 24px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .folderItem {
@@ -172,12 +175,18 @@
   overflow: hidden;
   text-overflow: ellipsis;
   padding-top: 2px;
+  min-width: 0;
 }
 
 .folderContents {
   width: 100%;
   position: relative;
   margin-left: 12px;
+  will-change: opacity, height;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  box-sizing: border-box;
+  max-width: calc(100% - 12px);
 }
 
 .folderContents::before {
@@ -292,4 +301,64 @@
 .folderIcon, .fileIcon {
   position: relative;
   z-index: 2;
+}
+
+/* Efeito mais notável ao clicar em um arquivo */
+.fileItem {
+  transition: transform 0.1s ease, background-color 0.15s ease-out;
+}
+
+.fileItem:active {
+  transform: translateY(2px) scale(0.99); /* Movimento para baixo e leve redução de escala */
+  background-color: rgba(100, 100, 255, 0.05); /* Sutil tom azulado */
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+/* Melhorar a transição de hover também */
+.fileItem, .folderItem {
+  transition: background-color 0.15s ease-out;
+}
+
+.fileItem:hover, .folderItem:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Rotação mais perceptível da seta ao passar o mouse */
+.folderArrow svg {
+  transition: transform 0.2s ease-out;
+}
+
+.folderItem:hover .folderArrow svg:not([data-opened="true"]) {
+  transform: translateX(2px) rotate(5deg); /* Adicionei rotação de 5 graus */
+}
+
+/* Para setas que apontam para baixo (pastas abertas) */
+.folderItem:hover .folderArrow svg[data-opened="true"] {
+  transform: translateY(2px) rotate(5deg); /* Aumentei para 2px e adicionei rotação */
+}
+
+/* Efeito ao clicar em um arquivo */
+.fileItem:active {
+  transform: translateY(1px); /* Movimento muito sutil para baixo */
+  transition: transform 0.1s ease;
+}
+
+.fileItem {
+  transition: transform 0.1s ease, background-color 0.15s ease-out;
+}
+
+/* Otimizações de performance para animações */
+.folderContents {
+  will-change: opacity, height;
+  transform: translateZ(0); /* Força aceleração de hardware */
+  backface-visibility: hidden;
+}
+
+.tab, .fileItem, .folderItem {
+  will-change: transform, opacity, background-color;
+}
+
+.treeContainer {
+  width: 100%;
+  overflow-x: hidden;
 } 

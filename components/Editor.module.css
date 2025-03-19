@@ -63,16 +63,19 @@
   min-width: 120px;
   max-width: 200px;
   overflow: hidden;
-  transition: background-color 0.2s ease, opacity 0.2s ease;
+  transition: background-color 0.2s ease, border-bottom-color 0.2s ease;
 }
 
-.tab:hover {
-  background-color: #333333;
+.tab:hover:not(.activeTab) {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-bottom-color: rgba(77, 120, 204, 0.2);
 }
 
 .activeTab {
   background-color: #1e1e1e;
   border-bottom: 1px solid #4d78cc;
+  transition: background-color 0.3s ease, border-bottom-color 0.3s ease;
+  animation: tabActivate 0.5s ease-out forwards;
 }
 
 .tabTitle {
@@ -91,12 +94,23 @@
   height: 16px;
   margin-left: 5px;
   border-radius: 3px;
-  transition: color 0.2s;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
   font-size: 14px;
+  opacity: 0.7;
+}
+
+.tab:hover .closeButton {
+  opacity: 1;
 }
 
 .closeButton:hover {
-  color: #ff6b6b;
+  transform: scale(1.1);
+  color: #ff6b6b !important;
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+  color: #ff4444 !important;
 }
 
 .editorContainer {
@@ -314,4 +328,22 @@
 
 .dragOverRight {
   box-shadow: inset -2px 0 0 0 #4d78cc;
+}
+
+/* Adicionar um leve flash ao ativar uma aba */
+@keyframes tabActivate {
+  0% { background-color: rgba(77, 120, 204, 0.15); }
+  30% { background-color: rgba(77, 120, 204, 0.08); }
+  100% { background-color: #1e1e1e; }
+}
+
+.activeTab {
+  animation: tabActivate 0.5s ease-out forwards;
+}
+
+/* Adicionando um destaque mais pronunciado */
+.tab:not(.activeTab):hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+  transition: background-color 0.2s ease, transform 0.2s ease, border-bottom-color 0.2s ease;
 } 

@@ -64,7 +64,7 @@ const FileTreeItem = memo(({
         >
           <div className={styles.folderArrow}>
             {node.isOpen ? 
-              <ChevronDown size={14} /> : 
+              <ChevronDown size={14} data-opened="true" /> : 
               <ChevronRight size={14} />
             }
           </div>
@@ -79,10 +79,15 @@ const FileTreeItem = memo(({
           {node.isOpen && node.children && (
             <motion.div 
               className={styles.folderContents}
-              initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
-              animate={{ height: 'auto', opacity: 1, overflow: 'visible' }}
-              exit={{ height: 0, opacity: 0, overflow: 'hidden' }}
-              transition={{ duration: 0.2 }}
+              initial={{ height: 0, opacity: 0, overflow: 'hidden', y: -10 }}
+              animate={{ height: 'auto', opacity: 1, overflow: 'visible', y: 0 }}
+              exit={{ height: 0, opacity: 0, overflow: 'hidden', y: -5 }}
+              transition={{ 
+                duration: 0.25,
+                ease: [0.25, 0.1, 0.25, 1],
+                opacity: { duration: 0.15 },
+                y: { duration: 0.2 }
+              }}
             >
               {node.children.map((child) => (
                 <FileTreeItem
