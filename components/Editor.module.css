@@ -27,21 +27,23 @@
 }
 
 .tab {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 8px 0 12px;
-  height: 100%;
-  border-right: 1px solid #1e1e1e;
+  padding: 0 10px;
+  border-right: 1px solid #252525;
+  background-color: #2d2d2d;
+  height: 35px;
   cursor: pointer;
-  background-color: var(--editor-bg);
+  user-select: none;
+  position: relative;
   min-width: 120px;
   max-width: 200px;
-  transition: background-color 0.2s;
+  overflow: hidden;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
 .tab:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #333333;
 }
 
 .activeTab {
@@ -63,13 +65,13 @@
   justify-content: center;
   width: 16px;
   height: 16px;
+  margin-left: 5px;
   border-radius: 3px;
   transition: color 0.2s;
   font-size: 14px;
 }
 
 .closeButton:hover {
-  background-color: transparent;
   color: #ff6b6b;
 }
 
@@ -193,10 +195,8 @@
 /* Estilo para a aba sendo arrastada */
 .draggingTab {
   opacity: 0.7;
-  background-color: #3c3c3c !important;
-  border: 1px dashed #565656 !important;
-  z-index: 5;
-  pointer-events: none !important;
+  background-color: #3c3c3c;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Indicador de local de soltura */

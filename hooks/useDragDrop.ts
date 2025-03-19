@@ -1,173 +1,209 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
+import { OpenFile } from '../store/editorStore';
 import styles from '../components/Editor.module.css';
 
 interface DragDropOptions {
-  onReorder: (sourceIndex: number, targetIndex: number) => void;
+  onReorder: (newOrder: OpenFile[]) => void;
+  items: OpenFile[];
 }
 
-export const useDragDrop = ({ onReorder }: DragDropOptions) => {
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [dropIndicatorPos, setDropIndicatorPos] = useState<number | null>(null);
+interface DropIndicator {
+  visible: boolean;
+  position: number;
+  beforeIndex: number | null;
+}
+
+export const useDragDrop = ({ onReorder, items }: DragDropOptions) => {
+  // Referências aos elementos DOM das abas
   const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  
+  // Estado para rastrear o índice da aba sendo arrastada
+  const [dragState, setDragState] = useState<{
+    draggingIndex: number | null;
+    draggingItem: OpenFile | null;
+  }>({
+    draggingIndex: null,
+    draggingItem: null
+  });
+  
+  // Estado para o indicador de soltura
+  const [dropIndicator, setDropIndicator] = useState<DropIndicator>({
+    visible: false,
+    position: 0,
+    beforeIndex: null
+  });
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+  // Manipulador de início de arrasto
+  const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>, index: number) => {
+    // Armazenar dados para transferência
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', index.toString());
-    setDraggingIndex(index);
-
-    // Adiciona um atraso para aplicar o estilo de arrasto
-    setTimeout(() => {
-      if (itemRefs.current[index]) {
-        itemRefs.current[index]?.classList.add(styles.draggingTab);
-      }
-    }, 0);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>, index: number) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
     
-    if (draggingIndex === null || draggingIndex === index) {
-      setDropIndicatorPos(null);
-      return;
-    }
-
-    // Calcula a posição do indicador de soltura
-    const targetTab = itemRefs.current[index];
-    if (targetTab && containerRef.current) {
-      const tabRect = targetTab.getBoundingClientRect();
-      const mouseX = e.clientX;
-      const middleX = tabRect.left + tabRect.width / 2;
-      
-      // Determina se o indicador deve aparecer à esquerda ou à direita da aba
-      if (mouseX < middleX) {
-        setDropIndicatorPos(tabRect.left);
-      } else {
-        setDropIndicatorPos(tabRect.right);
-      }
-    }
-  };
-
-  const handleTabsBarDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    
-    if (draggingIndex === null) {
-      return;
-    }
-    
-    let overTabIndex = -1;
-    let closestDistance = Infinity;
-    
-    itemRefs.current.forEach((tabRef, index) => {
-      if (!tabRef) return;
-      
-      const tabRect = tabRef.getBoundingClientRect();
-      const tabCenter = tabRect.left + tabRect.width / 2;
-      const distance = Math.abs(e.clientX - tabCenter);
-      
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        overTabIndex = index;
-      }
+    // Atualizar estado de arrasto
+    setDragState({
+      draggingIndex: index,
+      draggingItem: items[index]
     });
     
-    if (overTabIndex === -1 || overTabIndex === draggingIndex) {
-      setDropIndicatorPos(null);
+    // Tornar o indicador de soltura visível
+    setDropIndicator(prev => ({
+      ...prev,
+      visible: true
+    }));
+    
+    // Definir um preview de arrasto (opcional)
+    if (e.dataTransfer.setDragImage && itemRefs.current[index]) {
+      const element = itemRefs.current[index];
+      if (element) {
+        // Usar o próprio elemento como imagem de arrasto, mas com transparência
+        e.dataTransfer.setDragImage(element, 0, 0);
+      }
+    }
+  }, [items]);
+
+  // Manipulador de arrasto sobre um elemento
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>, hoverIndex: number) => {
+    e.preventDefault();
+    
+    // Verificar se estamos arrastando algo
+    if (dragState.draggingIndex === null) return;
+    
+    // Não fazer nada se arrastar sobre o próprio item
+    if (hoverIndex === dragState.draggingIndex) {
+      setDropIndicator(prev => ({
+        ...prev,
+        visible: false
+      }));
       return;
     }
     
-    const targetTab = itemRefs.current[overTabIndex];
-    if (targetTab && containerRef.current) {
-      const tabRect = targetTab.getBoundingClientRect();
-      const mouseX = e.clientX;
-      const tabCenter = tabRect.left + tabRect.width / 2;
-      
-      if (mouseX < tabCenter) {
-        setDropIndicatorPos(tabRect.left);
-      } else {
-        setDropIndicatorPos(tabRect.right);
-      }
+    // Obter a referência do elemento atual
+    const targetElement = itemRefs.current[hoverIndex];
+    if (!targetElement) return;
+    
+    // Obter posições e dimensões do elemento e do contêiner
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    const targetRect = targetElement.getBoundingClientRect();
+    
+    if (!containerRect) return;
+    
+    // Posição do mouse relativa ao contêiner
+    const mouseX = e.clientX - containerRect.left;
+    // Posição do elemento relativa ao contêiner
+    const targetLeft = targetRect.left - containerRect.left;
+    const targetWidth = targetRect.width;
+    
+    // Determinar se está antes ou depois do elemento
+    const isBeforeItem = mouseX < targetLeft + targetWidth / 2;
+    
+    let beforeIndex = isBeforeItem ? hoverIndex : hoverIndex + 1;
+    
+    // Ajustar o índice se arrastarmos antes do nosso próprio elemento
+    if (dragState.draggingIndex < hoverIndex && isBeforeItem) {
+      beforeIndex = hoverIndex;
+    } else if (dragState.draggingIndex > hoverIndex && !isBeforeItem) {
+      beforeIndex = hoverIndex + 1;
     }
-  };
+    
+    // Calcular a posição do indicador de soltura
+    const indicatorPosition = isBeforeItem ? 
+      targetRect.left - containerRect.left : 
+      targetRect.right - containerRect.left;
+    
+    // Atualizar o estado do indicador
+    setDropIndicator({
+      visible: true,
+      position: indicatorPosition,
+      beforeIndex: beforeIndex === dragState.draggingIndex ? null : beforeIndex
+    });
+    
+  }, [dragState.draggingIndex, dragState.draggingItem]);
 
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    if (containerRef.current) {
-      const containerRect = containerRef.current.getBoundingClientRect();
-      if (
-        e.clientX < containerRect.left || 
-        e.clientX > containerRect.right || 
-        e.clientY < containerRect.top || 
-        e.clientY > containerRect.bottom
-      ) {
-        setDropIndicatorPos(null);
-      }
-    }
-  };
-
-  const handleDragEnd = () => {
-    if (draggingIndex !== null && itemRefs.current[draggingIndex]) {
-      itemRefs.current[draggingIndex]?.classList.remove(styles.draggingTab);
-    }
-    setDraggingIndex(null);
-    setDropIndicatorPos(null);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetIndex: number) => {
+  // Manipulador de fim de arrasto
+  const handleDragEnd = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     
-    try {
-      const sourceIndexStr = e.dataTransfer.getData('text/plain');
-      if (!sourceIndexStr) return;
+    // Verificar se temos informações válidas de arrasto e soltura
+    if (dragState.draggingIndex !== null && 
+        dropIndicator.beforeIndex !== null && 
+        dragState.draggingItem) {
       
-      const sourceIndex = parseInt(sourceIndexStr, 10);
-      if (isNaN(sourceIndex) || sourceIndex === targetIndex) {
-        return;
+      const newItems = [...items];
+      
+      // Remover o item arrastado
+      newItems.splice(dragState.draggingIndex, 1);
+      
+      // Calcular a nova posição, levando em conta a remoção anterior
+      let newIndex = dropIndicator.beforeIndex;
+      if (dropIndicator.beforeIndex > dragState.draggingIndex) {
+        newIndex = dropIndicator.beforeIndex - 1;
       }
-
-      const targetTab = itemRefs.current[targetIndex];
-      if (targetTab) {
-        const tabRect = targetTab.getBoundingClientRect();
-        const mouseX = e.clientX;
-        const middleX = tabRect.left + tabRect.width / 2;
-        
-        let insertionIndex = targetIndex;
-        
-        if (sourceIndex < targetIndex) {
-          if (mouseX > middleX) {
-            insertionIndex = targetIndex;
-          } else {
-            insertionIndex = targetIndex - 1;
-          }
-        } else {
-          if (mouseX < middleX) {
-            insertionIndex = targetIndex;
-          } else {
-            insertionIndex = targetIndex + 1;
-          }
-        }
-        
-        onReorder(sourceIndex, insertionIndex);
-      } else {
-        onReorder(sourceIndex, targetIndex);
-      }
-    } catch (error) {
-      console.error('Erro durante o drop:', error);
-    } finally {
-      handleDragEnd();
+      
+      // Inserir o item na nova posição
+      newItems.splice(newIndex, 0, dragState.draggingItem);
+      
+      // Notificar sobre a reordenação
+      onReorder(newItems);
     }
+    
+    // Limpar estados
+    setDragState({
+      draggingIndex: null,
+      draggingItem: null
+    });
+    
+    setDropIndicator({
+      visible: false,
+      position: 0,
+      beforeIndex: null
+    });
+  }, [items, dragState.draggingIndex, dragState.draggingItem, dropIndicator.beforeIndex, onReorder]);
+
+  // Manipulador de saída do arrasto
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    // Verificar se o mouse saiu do contêiner de abas
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect();
+      
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
+      
+      // Se o mouse estiver fora dos limites do contêiner
+      if (
+        mouseX < containerRect.left ||
+        mouseX > containerRect.right ||
+        mouseY < containerRect.top ||
+        mouseY > containerRect.bottom
+      ) {
+        // Esconder o indicador de soltura
+        setDropIndicator(prev => ({
+          ...prev,
+          visible: false
+        }));
+      }
+    }
+  }, []);
+
+  // Posição do indicador para ser usado no componente pai
+  const getDropIndicatorPosition = () => {
+    if (!dropIndicator.visible) return null;
+    
+    return {
+      visible: dropIndicator.visible,
+      position: dropIndicator.position
+    };
   };
 
   return {
-    draggingIndex,
-    dropIndicatorPos,
     itemRefs,
     containerRef,
     handleDragStart,
     handleDragOver,
-    handleTabsBarDragOver,
-    handleDragLeave,
     handleDragEnd,
-    handleDrop
+    handleDragLeave,
+    isDragging: dragState.draggingIndex !== null,
+    draggingIndex: dragState.draggingIndex,
+    dropIndicatorPosition: getDropIndicatorPosition()
   };
 }; 
