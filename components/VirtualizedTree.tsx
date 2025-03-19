@@ -7,7 +7,10 @@ import {
   ChevronRight, 
   ChevronDown, 
   Folder,
-  FolderOpen
+  FolderOpen,
+  Hexagon,
+  Atom,
+  Info
 } from 'lucide-react';
 
 // Função para transformar a estrutura de árvore em uma lista plana para virtualização
@@ -137,13 +140,13 @@ const VirtualizedTree: React.FC = () => {
               if (fileType === 'ts') {
                 return <span className={`${styles.fileIcon} ${styles.iconTS}`}>TS</span>;
               } else if (fileType === 'tsx') {
-                return <span className={`${styles.fileIcon} ${styles.iconReact}`}>R</span>;
+                return <Atom size={16} className={`${styles.fileIcon} ${styles.iconReact}`} />;
               } else if (fileType === 'js') {
                 return <span className={`${styles.fileIcon} ${styles.iconJS}`}>JS</span>;
               } else if (fileType === 'md') {
-                return <span className={`${styles.fileIcon} ${styles.iconMD}`}>MD</span>;
+                return <Info size={16} className={`${styles.fileIcon} ${styles.iconMD}`} />;
               } else if (fileType === 'json') {
-                return <span className={`${styles.fileIcon} ${styles.iconJSON}`}>{ }</span>;
+                return <Hexagon size={16} className={`${styles.fileIcon} ${styles.iconJSON}`} />;
               } else {
                 return <span className={styles.fileIcon}>F</span>;
               }

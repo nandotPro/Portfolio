@@ -5,7 +5,7 @@ import styles from './Editor.module.css';
 import dynamic from 'next/dynamic';
 import { OpenFile } from '../store/editorStore';
 import { useEditorStore } from '../store/editorStore';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { useTabManagement } from '../hooks/useTabManagement';
 import { 
   File,
@@ -13,7 +13,8 @@ import {
   FileType,
   Code2,
   Atom,
-  FileText
+  Hexagon,
+  Info
 } from 'lucide-react';
 
 // Lazy loading do componente CodeContent
@@ -34,6 +35,23 @@ interface EditorProps {
   currentFileContent?: any;
   children?: React.ReactNode;
 }
+
+// Adicione uma função auxiliar para obter o ícone correto baseado no tipo de arquivo
+const getFileIcon = (fileName: string) => {
+  if (fileName.endsWith('.ts')) {
+    return <Code2 size={16} className={`${styles.tabIcon} ${styles.iconTS}`} />;
+  } else if (fileName.endsWith('.tsx')) {
+    return <Atom size={16} className={`${styles.tabIcon} ${styles.iconReact}`} />;
+  } else if (fileName.endsWith('.js')) {
+    return <FileType size={16} className={`${styles.tabIcon} ${styles.iconJS}`} />;
+  } else if (fileName.endsWith('.md')) {
+    return <Info size={16} className={`${styles.tabIcon} ${styles.iconMD}`} />;
+  } else if (fileName.endsWith('.json')) {
+    return <Hexagon size={16} className={`${styles.tabIcon} ${styles.iconJSON}`} />;
+  } else {
+    return <File size={16} className={styles.tabIcon} />;
+  }
+};
 
 export default function Editor({ 
   openFiles, 
@@ -84,19 +102,7 @@ export default function Editor({
     // Redimensionar a array de refs quando o número de abas mudar
     itemRefs.current = itemRefs.current.slice(0, openFiles.length);
     
-    // Remover ou comentar este trecho
-    /*
-    // Definir se deve mostrar o preview
-    if (activeFileId && 
-        activeFileId !== 'about' && 
-        activeFileId !== 'contact' && 
-        activeFileId !== 'frontend' && 
-        activeFileId !== 'backend') {
-      setShowPreview(true);
-    } else {
-      setShowPreview(false);
-    }
-    */
+    
     // Sempre definir como false
     setShowPreview(false);
     
@@ -212,23 +218,7 @@ export default function Editor({
                 onDragEnd={handleDragEnd}
                 onDragLeave={handleDragLeave}
               >
-                <span className={styles.tabIcon}>
-                  {(() => {
-                    if (file.id.endsWith('.ts')) {
-                      return <FileType size={16} className={styles.iconTS} />;
-                    } else if (file.id.endsWith('.tsx')) {
-                      return <Atom size={16} className={styles.iconReact} />;
-                    } else if (file.id.endsWith('.js') || file.id.endsWith('.jsx')) {
-                      return <Code2 size={16} className={styles.iconJS} />;
-                    } else if (file.id.endsWith('.md')) {
-                      return <FileText size={16} className={styles.iconMD} />;
-                    } else if (file.id.endsWith('.json')) {
-                      return <FileJson size={16} className={styles.iconJSON} />;
-                    } else {
-                      return <File size={16} />;
-                    }
-                  })()}
-                </span>
+                {getFileIcon(file.name)}
                 <span className={styles.tabTitle}>{file.name}</span>
                 <span 
                   className={styles.closeButton}

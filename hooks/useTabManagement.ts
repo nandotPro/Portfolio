@@ -49,18 +49,22 @@ export function useTabManagement({
     onSwitchProject(fileId);
   }, [onSwitchProject]);
   
-  // Função para obter o ícone da aba baseado no tipo de arquivo
+  // Função para obter o tipo de ícone (sem JSX)
   const getTabIcon = useCallback((fileId: string) => {
-    if (fileId.endsWith('.ts') || fileId.endsWith('.tsx')) {
+    if (fileId.endsWith('.ts')) {
       return 'typescript';
+    } else if (fileId.endsWith('.tsx')) {
+      return 'react';
     } else if (fileId.endsWith('.js') || fileId.endsWith('.jsx')) {
       return 'javascript';
     } else if (fileId.endsWith('.css')) {
       return 'css';
     } else if (fileId.endsWith('.json')) {
-      return 'json';
+      return 'node';
+    } else if (fileId.endsWith('.md')) {
+      return 'info';
     }
-    return 'react';
+    return 'file';
   }, []);
   
   // Verificar se uma aba está ativa

@@ -202,24 +202,25 @@
   height: 16px;
 }
 
+/* Cores dos ícones correspondentes às do Sidebar */
 .iconTS {
-  color: #3178c6 !important;
-}
-
-.iconReact {
-  color: #61dafb !important;
+  color: #509df0 !important;
 }
 
 .iconJS {
   color: #f7df1e !important;
 }
 
-.iconMD {
-  color: #42a5f5 !important;
+.iconReact {
+  color: #61dafb !important;
 }
 
 .iconJSON {
-  color: #fbc02d !important;
+  color: #8cc84b !important; /* Verde Node.js */
+}
+
+.iconMD {
+  color: #cccccc !important; /* Cinza claro */
 }
 
 /* Estilo para a aba sendo arrastada */

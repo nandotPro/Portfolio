@@ -13,7 +13,10 @@ import {
   FolderOpen,
   FilePlus,
   FolderPlus,
-  RefreshCw
+  RefreshCw,
+  Hexagon,
+  Atom,
+  Info
 } from 'lucide-react';
 
 // Componente de item de arquivo memoizado para evitar re-renderizações desnecessárias
@@ -39,13 +42,13 @@ const FileTreeItem = memo(({
       case 'ts':
         return <span className={`${styles.fileIcon} ${styles.iconTS}`}>TS</span>;
       case 'tsx':
-        return <span className={`${styles.fileIcon} ${styles.iconReact}`}>R</span>;
+        return <Atom size={16} className={`${styles.fileIcon} ${styles.iconReact}`} />;
       case 'js':
         return <span className={`${styles.fileIcon} ${styles.iconJS}`}>JS</span>;
       case 'md':
-        return <span className={`${styles.fileIcon} ${styles.iconMD}`}>MD</span>;
+        return <Info size={16} className={`${styles.fileIcon} ${styles.iconMD}`} />;
       case 'json':
-        return <span className={`${styles.fileIcon} ${styles.iconJSON}`}>{ }</span>;
+        return <Hexagon size={16} className={`${styles.fileIcon} ${styles.iconJSON}`} />;
       default:
         return <span className={styles.fileIcon}>F</span>;
     }

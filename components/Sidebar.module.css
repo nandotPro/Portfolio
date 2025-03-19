@@ -141,6 +141,7 @@
   font-weight: bold;
   font-size: 10px;
   border-radius: 2px;
+  margin-right: 8px;
 }
 
 /* Tamanho maior apenas para ícones de pastas */
@@ -187,8 +188,9 @@
 }
 
 .iconTS {
-  background-color: #3178c6;
-  color: white;
+  background-color: transparent;
+  color: #509df0;
+  font-weight: bold;
 }
 
 .iconJS {
@@ -205,18 +207,15 @@
 }
 
 .iconJSON {
-  background-color: #fbc02d;
-  color: black;
+  color: #8cc84b !important; /* Verde típico do Node.js */
 }
 
 .iconReact {
-  background-color: #282c34;
-  color: #61dafb;
+  color: #61dafb !important; /* Cor azul do React */
 }
 
 .iconMD {
-  background-color: #42a5f5;
-  color: white;
+  color: #cccccc !important; /* Cinza claro para ícones de informação */
 }
 
 /* Adicionar estes estilos no Sidebar.module.css */
