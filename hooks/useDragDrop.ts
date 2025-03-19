@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { OpenFile } from '../store/editorStore';
 import styles from '../components/Editor.module.css';
+import { throttle, debounce } from 'lodash';
 
 interface DragDropOptions {
   onReorder: (newOrder: OpenFile[]) => void;
@@ -63,102 +64,106 @@ export const useDragDrop = ({ onReorder, items }: DragDropOptions) => {
   }, [items]);
 
   // Manipulador de arrasto sobre um elemento
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>, hoverIndex: number) => {
-    e.preventDefault();
-    
-    // Verificar se estamos arrastando algo
-    if (dragState.draggingIndex === null) return;
-    
-    // Não fazer nada se arrastar sobre o próprio item
-    if (hoverIndex === dragState.draggingIndex) {
-      setDropIndicator(prev => ({
-        ...prev,
-        visible: false
-      }));
-      return;
-    }
-    
-    // Obter a referência do elemento atual
-    const targetElement = itemRefs.current[hoverIndex];
-    if (!targetElement) return;
-    
-    // Obter posições e dimensões do elemento e do contêiner
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    const targetRect = targetElement.getBoundingClientRect();
-    
-    if (!containerRect) return;
-    
-    // Posição do mouse relativa ao contêiner
-    const mouseX = e.clientX - containerRect.left;
-    // Posição do elemento relativa ao contêiner
-    const targetLeft = targetRect.left - containerRect.left;
-    const targetWidth = targetRect.width;
-    
-    // Determinar se está antes ou depois do elemento
-    const isBeforeItem = mouseX < targetLeft + targetWidth / 2;
-    
-    let beforeIndex = isBeforeItem ? hoverIndex : hoverIndex + 1;
-    
-    // Ajustar o índice se arrastarmos antes do nosso próprio elemento
-    if (dragState.draggingIndex < hoverIndex && isBeforeItem) {
-      beforeIndex = hoverIndex;
-    } else if (dragState.draggingIndex > hoverIndex && !isBeforeItem) {
-      beforeIndex = hoverIndex + 1;
-    }
-    
-    // Calcular a posição do indicador de soltura
-    const indicatorPosition = isBeforeItem ? 
-      targetRect.left - containerRect.left : 
-      targetRect.right - containerRect.left;
-    
-    // Atualizar o estado do indicador
-    setDropIndicator({
-      visible: true,
-      position: indicatorPosition,
-      beforeIndex: beforeIndex === dragState.draggingIndex ? null : beforeIndex
-    });
-    
-  }, [dragState.draggingIndex, dragState.draggingItem]);
-
-  // Manipulador de fim de arrasto
-  const handleDragEnd = useCallback((e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    
-    // Verificar se temos informações válidas de arrasto e soltura
-    if (dragState.draggingIndex !== null && 
-        dropIndicator.beforeIndex !== null && 
-        dragState.draggingItem) {
+  const handleDragOver = useCallback(
+    throttle((e: React.DragEvent<HTMLDivElement>, hoverIndex: number) => {
+      e.preventDefault();
       
-      const newItems = [...items];
+      // Verificar se estamos arrastando algo
+      if (dragState.draggingIndex === null) return;
       
-      // Remover o item arrastado
-      newItems.splice(dragState.draggingIndex, 1);
-      
-      // Calcular a nova posição, levando em conta a remoção anterior
-      let newIndex = dropIndicator.beforeIndex;
-      if (dropIndicator.beforeIndex > dragState.draggingIndex) {
-        newIndex = dropIndicator.beforeIndex - 1;
+      // Não fazer nada se arrastar sobre o próprio item
+      if (hoverIndex === dragState.draggingIndex) {
+        setDropIndicator(prev => ({
+          ...prev,
+          visible: false
+        }));
+        return;
       }
       
-      // Inserir o item na nova posição
-      newItems.splice(newIndex, 0, dragState.draggingItem);
+      // Obter a referência do elemento atual
+      const targetElement = itemRefs.current[hoverIndex];
+      if (!targetElement) return;
       
-      // Notificar sobre a reordenação
-      onReorder(newItems);
-    }
-    
-    // Limpar estados
-    setDragState({
-      draggingIndex: null,
-      draggingItem: null
-    });
-    
-    setDropIndicator({
-      visible: false,
-      position: 0,
-      beforeIndex: null
-    });
-  }, [items, dragState.draggingIndex, dragState.draggingItem, dropIndicator.beforeIndex, onReorder]);
+      // Obter posições e dimensões do elemento e do contêiner
+      const containerRect = containerRef.current?.getBoundingClientRect();
+      const targetRect = targetElement.getBoundingClientRect();
+      
+      if (!containerRect) return;
+      
+      // Posição do mouse relativa ao contêiner
+      const mouseX = e.clientX - containerRect.left;
+      // Posição do elemento relativa ao contêiner
+      const targetLeft = targetRect.left - containerRect.left;
+      const targetWidth = targetRect.width;
+      
+      // Determinar se está antes ou depois do elemento
+      const isBeforeItem = mouseX < targetLeft + targetWidth / 2;
+      
+      let beforeIndex = isBeforeItem ? hoverIndex : hoverIndex + 1;
+      
+      // Ajustar o índice se arrastarmos antes do nosso próprio elemento
+      if (dragState.draggingIndex < hoverIndex && isBeforeItem) {
+        beforeIndex = hoverIndex;
+      } else if (dragState.draggingIndex > hoverIndex && !isBeforeItem) {
+        beforeIndex = hoverIndex + 1;
+      }
+      
+      // Calcular a posição do indicador de soltura
+      const indicatorPosition = isBeforeItem ? 
+        targetRect.left - containerRect.left : 
+        targetRect.right - containerRect.left;
+      
+      // Atualizar o estado do indicador
+      setDropIndicator({
+        visible: true,
+        position: indicatorPosition,
+        beforeIndex: beforeIndex === dragState.draggingIndex ? null : beforeIndex
+      });
+      
+    }, 16),
+    [dragState.draggingIndex, dragState.draggingItem]
+  );
+
+  // Manipulador de fim de arrasto
+  const handleDragEnd = useCallback(
+    debounce(() => {
+      // Verificar se temos informações válidas de arrasto e soltura
+      if (dragState.draggingIndex !== null && 
+          dropIndicator.beforeIndex !== null && 
+          dragState.draggingItem) {
+        
+        const newItems = [...items];
+        
+        // Remover o item arrastado
+        newItems.splice(dragState.draggingIndex, 1);
+        
+        // Calcular a nova posição, levando em conta a remoção anterior
+        let newIndex = dropIndicator.beforeIndex;
+        if (dropIndicator.beforeIndex > dragState.draggingIndex) {
+          newIndex = dropIndicator.beforeIndex - 1;
+        }
+        
+        // Inserir o item na nova posição
+        newItems.splice(newIndex, 0, dragState.draggingItem);
+        
+        // Notificar sobre a reordenação
+        onReorder(newItems);
+      }
+      
+      // Limpar estados
+      setDragState({
+        draggingIndex: null,
+        draggingItem: null
+      });
+      
+      setDropIndicator({
+        visible: false,
+        position: 0,
+        beforeIndex: null
+      });
+    }, 50),
+    [items, dragState.draggingIndex, dragState.draggingItem, dropIndicator.beforeIndex, onReorder]
+  );
 
   // Manipulador de saída do arrasto
   const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {

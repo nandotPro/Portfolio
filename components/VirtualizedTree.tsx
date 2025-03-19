@@ -126,7 +126,7 @@ const VirtualizedTree: React.FC = () => {
           
           {isOpen && (
             <div className={styles.folderContents}>
-              {/* O conteúdo existente já será renderizado pelo componente List */}
+              {/* Conteúdo existente já será renderizado pelo componente List */}
             </div>
           )}
         </div>

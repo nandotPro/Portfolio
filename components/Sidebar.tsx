@@ -62,12 +62,7 @@ const FileTreeItem = memo(({
           onClick={() => onToggleFolder(node.id)}
           style={{ paddingLeft }}
         >
-          <div className={styles.folderArrow}>
-            {node.isOpen ? 
-              <ChevronDown size={14} data-opened="true" /> : 
-              <ChevronRight size={14} />
-            }
-          </div>
+          <FolderArrow isOpen={node.isOpen} />
           {node.isOpen ? 
             <FolderOpen size={18} className={`${styles.folderIcon} ${styles.iconFolderOpen}`} /> : 
             <Folder size={18} className={`${styles.folderIcon} ${styles.iconFolder}`} />
@@ -79,15 +74,11 @@ const FileTreeItem = memo(({
           {node.isOpen && node.children && (
             <motion.div 
               className={styles.folderContents}
-              initial={{ height: 0, opacity: 0, overflow: 'hidden', y: -10 }}
-              animate={{ height: 'auto', opacity: 1, overflow: 'visible', y: 0 }}
-              exit={{ height: 0, opacity: 0, overflow: 'hidden', y: -5 }}
-              transition={{ 
-                duration: 0.25,
-                ease: [0.25, 0.1, 0.25, 1],
-                opacity: { duration: 0.15 },
-                y: { duration: 0.2 }
-              }}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ overflow: 'hidden' }}
             >
               {node.children.map((child) => (
                 <FileTreeItem
@@ -119,6 +110,42 @@ const FileTreeItem = memo(({
 });
 
 FileTreeItem.displayName = 'FileTreeItem';
+
+// Corrigir a definição do FolderArrow
+interface FolderArrowProps {
+  isOpen: boolean | undefined;
+}
+
+// Em vez de animar todos os componentes, use memo para evitar re-renderizações
+const FolderArrow = memo<FolderArrowProps>(({ isOpen }) => (
+  <div className={styles.folderArrow}>
+    {isOpen ? 
+      <ChevronDown size={14} data-opened="true" /> : 
+      <ChevronRight size={14} />
+    }
+  </div>
+));
+
+FolderArrow.displayName = 'FolderArrow';
+
+// Corrigir definição de FileItem
+interface FileItemProps {
+  node: FileNode;
+  onClick: () => void;
+  isActive: boolean;
+}
+
+// Utilizar React.memo para componentes que não mudam frequentemente
+const FileItem = memo<FileItemProps>(({ node, onClick, isActive }) => (
+  <div 
+    className={`${styles.fileItem} ${isActive ? styles.activeFile : ''}`}
+    onClick={onClick}
+  >
+    {/* Conteúdo do item */}
+  </div>
+));
+
+FileItem.displayName = 'FileItem';
 
 // Componente principal de Sidebar também memoizado
 const Sidebar = () => {
