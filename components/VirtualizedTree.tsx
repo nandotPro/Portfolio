@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import { FixedSizeList as List } from 'react-window';
+import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 import { useEditorStore, FileNode } from '../store/editorStore';
 import styles from './Sidebar.module.css';
 import { VscFolder, VscFolderOpened, VscChevronRight, VscChevronDown, VscFile } from 'react-icons/vsc';
@@ -19,13 +20,25 @@ const flattenTree = (node: FileNode, level = 0, expandedMap: Record<string, bool
   return result;
 };
 
+// Substitua a definição do AutoSizer
+interface AutoSizerProps {
+  children: (size: { width: number; height: number }) => React.ReactNode;
+}
+
 const VirtualizedTree: React.FC = () => {
   const { fileTree, toggleFolder, openProject, activeFileId } = useEditorStore();
   const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<List>(null);
   const [height, setHeight] = useState(500);
   
   // Estado local para acompanhar as pastas expandidas
   const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({});
+  
+  // Cache da lista plana - só recalcula quando necessário
+  const flatList = useMemo(() => {
+    if (!fileTree) return [];
+    return flattenTree(fileTree, 0, expandedMap);
+  }, [fileTree, expandedMap]);
   
   // Atualizar a altura com base no container pai
   useEffect(() => {
@@ -36,11 +49,34 @@ const VirtualizedTree: React.FC = () => {
     };
     
     updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    
+    // Observer para detectar mudanças de tamanho
+    if (typeof ResizeObserver !== 'undefined') {
+      const resizeObserver = new ResizeObserver(updateHeight);
+      if (containerRef.current) {
+        resizeObserver.observe(containerRef.current);
+      }
+      return () => {
+        if (containerRef.current) {
+          resizeObserver.unobserve(containerRef.current);
+        }
+      };
+    } else {
+      // Fallback para navegadores que não suportam ResizeObserver
+      window.addEventListener('resize', updateHeight);
+      return () => window.removeEventListener('resize', updateHeight);
+    }
   }, []);
   
-  // Manipuladores de eventos
+  // Quando uma pasta é expandida/contraída, atualize a lista
+  useEffect(() => {
+    if (listRef.current) {
+      // Força a lista a recalcular com as novas dimensões
+      (listRef.current as any).resetAfterIndex(0);
+    }
+  }, [flatList.length]);
+  
+  // Manipuladores de eventos com memoização para evitar recriações desnecessárias
   const handleToggleFolder = useCallback((id: string) => {
     toggleFolder(id);
     setExpandedMap(prev => ({
@@ -53,14 +89,8 @@ const VirtualizedTree: React.FC = () => {
     openProject(path, id, name);
   }, [openProject]);
   
-  // Obter a lista plana para a virtualização
-  const flatList = useMemo(() => {
-    if (!fileTree) return [];
-    return flattenTree(fileTree, 0, expandedMap);
-  }, [fileTree, expandedMap]);
-  
-  // Renderizar cada linha
-  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
+  // Renderizar cada linha com memoização para evitar re-renderizações desnecessárias
+  const Row = useCallback(({ index, style }: ListChildComponentProps) => {
     const { node, level } = flatList[index];
     const isActive = activeFileId === node.id;
     const paddingLeft = `${level * 16}px`;
@@ -115,20 +145,27 @@ const VirtualizedTree: React.FC = () => {
         </div>
       </div>
     );
-  };
+  }, [flatList, activeFileId, expandedMap, handleToggleFolder, handleFileClick]);
   
   if (!fileTree) return null;
-  
+
   return (
-    <div className={styles.virtualTreeContainer} ref={containerRef}>
-      <List
-        height={height}
-        itemCount={flatList.length}
-        itemSize={24}
-        width="100%"
-      >
-        {Row}
-      </List>
+    <div ref={containerRef} className={styles.fileTree} style={{ height: '100%' }}>
+      <AutoSizer>
+        {({ width, height }) => (
+          <List
+            ref={listRef}
+            className={styles.virtualList}
+            width={width}
+            height={height}
+            itemCount={flatList.length}
+            itemSize={24} // altura de cada item
+            overscanCount={10} // número de itens a serem renderizados fora da área visível
+          >
+            {Row}
+          </List>
+        )}
+      </AutoSizer>
     </div>
   );
 };

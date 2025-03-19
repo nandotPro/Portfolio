@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import styles from './CodeContent.module.css';
-import { useI18nStore } from '../i18n/i18n';
+import { useCodeRenderer } from '../hooks/useCodeRenderer';
 
 export interface CodeLine {
   text: string;
@@ -28,131 +28,24 @@ const CodeContent: React.FC<CodeContentProps> = ({
   skipAnimation = false,
   cachedContent
 }) => {
-  const { getContentForSection } = useI18nStore();
-  const [content, setContent] = useState<CodeLine[]>([]);
-  const [displayedLines, setDisplayedLines] = useState<CodeLine[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
-  const currentLineRef = useRef(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const completedRef = useRef(false);
-  const contentChangeRef = useRef(onContentChange);
-  const lineAnimationRef = useRef(onLineAnimation);
-  const animationCompleteRef = useRef(onAnimationComplete);
-  
-  // Atualizar refs quando as props mudarem
-  useEffect(() => {
-    contentChangeRef.current = onContentChange;
-    lineAnimationRef.current = onLineAnimation;
-    animationCompleteRef.current = onAnimationComplete;
-  }, [onContentChange, onLineAnimation, onAnimationComplete]);
-  
-  // Efeito para carregar o conteúdo inicial
-  useEffect(() => {
-    // Limpar qualquer intervalo existente
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    
-    // Resetar o estado
-    completedRef.current = false;
-    currentLineRef.current = 0;
-    
-    // Verificação explícita: se temos conteúdo em cache E skipAnimation está ligado
-    if (skipAnimation && cachedContent && cachedContent.length > 0) {
-      setContent(cachedContent);
-      setDisplayedLines(cachedContent);
-      if (contentChangeRef.current) contentChangeRef.current(cachedContent.length);
-      
-      // Importante: notificar que a animação está completa
-      if (animationCompleteRef.current) {
-        setTimeout(() => {
-          animationCompleteRef.current?.(cachedContent);
-        }, 0);
-      }
-      return;
-    }
-    
-    // Obter o conteúdo para a seção ativa
-    const sectionContent = getContentForSection(activeSection);
-    setContent(sectionContent);
-    
-    // Se formos pular a animação, mostrar tudo de uma vez
-    if (skipAnimation) {
-      setDisplayedLines(sectionContent);
-      if (contentChangeRef.current) contentChangeRef.current(sectionContent.length);
-      completedRef.current = true;
-      
-      // Importante: notificar que a animação está completa
-      if (animationCompleteRef.current) {
-        setTimeout(() => {
-          animationCompleteRef.current?.(sectionContent);
-        }, 0);
-      }
-      return;
-    }
-    
-    // Caso contrário, iniciar a animação
-    setDisplayedLines([]);
-    setIsTyping(true);
-    
-    if (contentChangeRef.current) contentChangeRef.current(sectionContent.length);
-    
-    // Configurar o intervalo para a animação de digitação
-    intervalRef.current = setInterval(() => {
-      if (currentLineRef.current >= sectionContent.length) {
-        // Se chegamos ao fim, limpar o intervalo
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-          intervalRef.current = null;
-        }
-        
-        setIsTyping(false);
-        completedRef.current = true;
-        
-        if (animationCompleteRef.current) {
-          animationCompleteRef.current(sectionContent);
-        }
-        return;
-      }
-      
-      // Obter a próxima linha, com verificação de segurança
-      const nextLine = sectionContent[currentLineRef.current];
-      
-      // Verificar se a linha existe antes de adicioná-la
-      if (nextLine) {
-        setDisplayedLines(prev => [...prev, nextLine]);
-        
-        // Notificar sobre a linha atual usando a ref, não a prop diretamente
-        if (lineAnimationRef.current) {
-          lineAnimationRef.current(currentLineRef.current + 1);
-        }
-      }
-      
-      // Incrementar o contador de linha
-      currentLineRef.current += 1;
-    }, 50);
-    
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [activeSection, skipAnimation, cachedContent, getContentForSection]);
-  
-  // Efeito para atualizar as linhas exibidas e informar a contagem de linhas
-  useEffect(() => {
-    if (activeSection) {
-      const contentLines = getContentForSection(activeSection);
-      if (contentLines && contentLines.length > 0) {
-        // Informar ao componente pai quantas linhas existem
-        onLineCountChange(contentLines.length);
-      } else {
-        onLineCountChange(1);
-      }
-    }
-  }, [activeSection, getContentForSection, onLineCountChange]);
+  // Usar o hook useCodeRenderer para gerenciar a renderização e animação
+  const {
+    displayedLines,
+    isTyping,
+    lineCount
+  } = useCodeRenderer({
+    activeSection,
+    skipAnimation,
+    cachedContent,
+    onContentChange,
+    onLineAnimation,
+    onAnimationComplete
+  });
+
+  // Notificar o componente pai sobre a contagem de linhas
+  React.useEffect(() => {
+    onLineCountChange(lineCount);
+  }, [lineCount, onLineCountChange]);
   
   return (
     <div className={styles.codeContentWrapper}>

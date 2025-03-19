@@ -1,13 +1,20 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import styles from './Layout.module.css';
-import Sidebar from './Sidebar';
-import Editor from './Editor';
-import Footer from './Footer';
 import { useEditorStore } from '../store/editorStore';
 import { useI18nStore } from '../i18n/i18n';
 import { initialFileTree } from '../data/fileTreeData';
+
+// Substituindo importações diretas por lazy loading
+const Sidebar = lazy(() => import('./Sidebar'));
+const Footer = lazy(() => import('./Footer'));
+const Editor = lazy(() => import('./Editor'));
+
+// Componentes de fallback
+const SidebarFallback = () => <div className={styles.sidebarFallback}></div>;
+const EditorFallback = () => <div className={styles.editorFallback}></div>;
+const FooterFallback = () => <div className={styles.footerFallback}></div>;
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,7 +37,6 @@ export default function Layout({ children }: LayoutProps) {
 
   // Inicializar a árvore de arquivos
   useEffect(() => {
-    // Só inicialize a árvore de arquivos se ela ainda não existir
     if (!fileTree) {
       setFileTree(initialFileTree);
     }
@@ -38,10 +44,7 @@ export default function Layout({ children }: LayoutProps) {
   
   // Efeito para limpar o cache quando o idioma mudar
   useEffect(() => {
-    // Limpar o cache de arquivos animados quando o idioma mudar
-    // para forçar que o conteúdo seja recarregado com o novo idioma
     openFiles.forEach(file => {
-      // Comparar o idioma armazenado com o atual
       if (!file.language || file.language !== currentLanguage) {
         resetAnimationState(file.id);
       }
@@ -59,21 +62,27 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className={styles.container}>
       <div className={styles.editorContainer}>
-        <Sidebar />
-        <Editor 
-          openFiles={openFiles}
-          activeFileId={activeFileId}
-          onCloseProject={closeProject}
-          onSwitchProject={switchProject}
-          onContentLoaded={handleContentLoaded}
-          onReorderFiles={reorderFiles}
-          currentFileAnimated={currentFile?.animated || false}
-          currentFileContent={currentFile?.content}
-        >
-          {children}
-        </Editor>
+        <Suspense fallback={<SidebarFallback />}>
+          <Sidebar />
+        </Suspense>
+        <Suspense fallback={<EditorFallback />}>
+          <Editor 
+            openFiles={openFiles}
+            activeFileId={activeFileId}
+            onCloseProject={closeProject}
+            onSwitchProject={switchProject}
+            onContentLoaded={handleContentLoaded}
+            onReorderFiles={reorderFiles}
+            currentFileAnimated={currentFile?.animated || false}
+            currentFileContent={currentFile?.content}
+          >
+            {children}
+          </Editor>
+        </Suspense>
       </div>
-      <Footer />
+      <Suspense fallback={<FooterFallback />}>
+        <Footer />
+      </Suspense>
     </div>
   );
 } 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './Editor.module.css';
 import ProjectPreview from './ProjectPreview';
-import CodeContent from './CodeContent';
+import dynamic from 'next/dynamic';
 import { OpenFile } from '../store/editorStore';
 import { useDragDrop } from '../hooks/useDragDrop';
 import { useEditorStore } from '../store/editorStore';
@@ -11,6 +11,12 @@ import { DiReact } from 'react-icons/di';
 import { SiTypescript } from 'react-icons/si';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTabManagement } from '../hooks/useTabManagement';
+
+// Lazy loading do componente CodeContent
+const CodeContent = dynamic(() => import('./CodeContent'), {
+  loading: () => <div className={styles.loadingContent}>Carregando conteúdo...</div>,
+  ssr: false
+});
 
 // Definição da interface EditorProps que estava faltando
 interface EditorProps {
@@ -256,6 +262,7 @@ export default function Editor({
         ) : (
           <div className={styles.welcomeScreen}>
             <div className={styles.welcomeText}>
+              <h1 className={styles.welcomeTitle}>{"{CodeFolio}"}</h1>
               <h1 className={styles.welcomeTitle}>Portfolio by ILAN</h1>
               <p className={styles.welcomeSubtitle}>select a file to start</p>
             </div>
