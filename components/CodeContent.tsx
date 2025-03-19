@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './CodeContent.module.css';
-import { useEditorStore } from '../store/editorStore';
+import { useI18nStore } from '../i18n/i18n';
 
 export interface CodeLine {
   text: string;
@@ -28,7 +28,7 @@ const CodeContent: React.FC<CodeContentProps> = ({
   skipAnimation = false,
   cachedContent
 }) => {
-  const { getContentForSection } = useEditorStore();
+  const { getContentForSection } = useI18nStore();
   const [content, setContent] = useState<CodeLine[]>([]);
   const [displayedLines, setDisplayedLines] = useState<CodeLine[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -58,16 +58,25 @@ const CodeContent: React.FC<CodeContentProps> = ({
     completedRef.current = false;
     currentLineRef.current = 0;
     
-    // Usar conteúdo em cache se disponível e se devemos pular a animação
-    if (skipAnimation && cachedContent) {
+    // Verificação explícita: se temos conteúdo em cache E skipAnimation está ligado
+    if (skipAnimation && cachedContent && cachedContent.length > 0) {
+      console.log("Usando conteúdo em cache:", cachedContent.length, "linhas");
       setContent(cachedContent);
       setDisplayedLines(cachedContent);
       if (contentChangeRef.current) contentChangeRef.current(cachedContent.length);
+      
+      // Importante: notificar que a animação está completa
+      if (animationCompleteRef.current) {
+        setTimeout(() => {
+          animationCompleteRef.current?.(cachedContent);
+        }, 0);
+      }
       return;
     }
     
     // Obter o conteúdo para a seção ativa
     const sectionContent = getContentForSection(activeSection);
+    console.log("Obtendo novo conteúdo para", activeSection, ":", sectionContent.length, "linhas");
     setContent(sectionContent);
     
     // Se formos pular a animação, mostrar tudo de uma vez
@@ -75,8 +84,12 @@ const CodeContent: React.FC<CodeContentProps> = ({
       setDisplayedLines(sectionContent);
       if (contentChangeRef.current) contentChangeRef.current(sectionContent.length);
       completedRef.current = true;
+      
+      // Importante: notificar que a animação está completa
       if (animationCompleteRef.current) {
-        animationCompleteRef.current(sectionContent);
+        setTimeout(() => {
+          animationCompleteRef.current?.(sectionContent);
+        }, 0);
       }
       return;
     }
@@ -133,10 +146,10 @@ const CodeContent: React.FC<CodeContentProps> = ({
   // Efeito para atualizar as linhas exibidas e informar a contagem de linhas
   useEffect(() => {
     if (activeSection) {
-      const content = getContentForSection(activeSection);
-      if (content && content.length > 0) {
+      const contentLines = getContentForSection(activeSection);
+      if (contentLines && contentLines.length > 0) {
         // Informar ao componente pai quantas linhas existem
-        onLineCountChange(content.length);
+        onLineCountChange(contentLines.length);
       } else {
         onLineCountChange(1);
       }

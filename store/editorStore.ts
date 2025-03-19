@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { CodeLine } from '../components/CodeContent';
+import { useI18nStore } from '../i18n/i18n';
 
 export interface FileNode {
   id: string;
@@ -18,6 +19,7 @@ export interface OpenFile {
   path: string;
   content: any;
   animated: boolean;
+  language?: string;
 }
 
 interface EditorState {
@@ -32,7 +34,8 @@ interface EditorState {
   closeProject: (fileId: string) => void;
   switchProject: (fileId: string) => void;
   reorderFiles: (newOrder: OpenFile[]) => void;
-  setContentLoaded: (fileId: string, content: any, lineCount: number) => void;
+  setContentLoaded: (fileId: string, content: any, lineCount: number, language?: string) => void;
+  resetAnimationState: (fileId: string) => void;
   toggleFolder: (folderId: string) => void;
   setFileTree: (fileTree: FileNode) => void;
   getContentForSection: (section: string) => CodeLine[];
@@ -103,12 +106,26 @@ export const useEditorStore = create<EditorState>()(
       state.openFiles = newOrder;
     }),
 
-    setContentLoaded: (fileId, content, lineCount) => set((state) => {
+    setContentLoaded: (fileId, content, lineCount, language) => set((state) => {
       // Atualiza o conteúdo de um arquivo e marca como animado
       const fileIndex = state.openFiles.findIndex(file => file.id === fileId);
       if (fileIndex >= 0) {
         state.openFiles[fileIndex].content = content;
         state.openFiles[fileIndex].animated = true;
+        
+        // Se fornecido, armazene o idioma atual do conteúdo
+        if (language) {
+          state.openFiles[fileIndex].language = language;
+        }
+      }
+    }),
+
+    resetAnimationState: (fileId) => set((state) => {
+      // Resetar o estado de animação para um arquivo específico
+      const fileIndex = state.openFiles.findIndex(file => file.id === fileId);
+      if (fileIndex >= 0) {
+        state.openFiles[fileIndex].animated = false;
+        state.openFiles[fileIndex].content = null;
       }
     }),
 
@@ -141,8 +158,9 @@ export const useEditorStore = create<EditorState>()(
     }),
 
     getContentForSection: (section: string) => {
-      // Implementação da função getContentForSection
-      return getContentForSection(section);
+      // Obter o conteúdo traduzido da store de i18n
+      // Nota: Isso cria uma dependência circular, que será resolvida abaixo
+      return useI18nStore.getState().getContentForSection(section);
     }
   }))
 );

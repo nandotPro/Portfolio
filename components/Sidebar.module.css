@@ -180,4 +180,25 @@
 .collapseButton {
   position: relative;
   top: -2px; /* Ajusta a posição vertical */
+}
+
+.virtualTreeContainer {
+  width: 100%;
+  height: calc(100% - 30px); /* Ajuste de acordo com a altura do cabeçalho do explorador */
+  overflow: hidden;
+}
+
+/* Ajuste o estilo das barras de rolagem se necessário */
+.virtualTreeContainer div::-webkit-scrollbar {
+  width: 8px;
+}
+
+.virtualTreeContainer div::-webkit-scrollbar-track {
+  background: var(--editor-bg);
+}
+
+.virtualTreeContainer div::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+  border: 2px solid var(--editor-bg);
 } 
