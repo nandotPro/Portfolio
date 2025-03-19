@@ -7,12 +7,10 @@ import { useI18nStore } from '../i18n/i18n';
 import { initialFileTree } from '../data/fileTreeData';
 import { ErrorBoundary } from './ErrorBoundary';
 
-// Substituindo importações diretas por lazy loading
 const Sidebar = lazy(() => import('./Sidebar'));
 const Footer = lazy(() => import('./Footer'));
 const Editor = lazy(() => import('./Editor'));
 
-// Componentes de fallback
 const SidebarFallback = () => <div className={styles.sidebarFallback}></div>;
 const EditorFallback = () => <div className={styles.editorFallback}></div>;
 const FooterFallback = () => <div className={styles.footerFallback}></div>;
@@ -36,14 +34,12 @@ export default function Layout({ children }: LayoutProps) {
   
   const { currentLanguage } = useI18nStore();
 
-  // Inicializar a árvore de arquivos
   useEffect(() => {
     if (!fileTree) {
       setFileTree(initialFileTree);
     }
-  }, [fileTree, setFileTree]);
+  }, []);
   
-  // Efeito para limpar o cache quando o idioma mudar
   useEffect(() => {
     openFiles.forEach(file => {
       if (!file.language || file.language !== currentLanguage) {
@@ -52,10 +48,8 @@ export default function Layout({ children }: LayoutProps) {
     });
   }, [currentLanguage, openFiles, resetAnimationState]);
 
-  // Encontrar o arquivo atual
   const currentFile = openFiles.find(file => file.id === activeFileId);
 
-  // Função para lidar com a conclusão do carregamento do conteúdo
   const handleContentLoaded = (fileId: string, content: any, lineCount: number) => {
     setContentLoaded(fileId, content, lineCount, currentLanguage);
   };
@@ -88,4 +82,4 @@ export default function Layout({ children }: LayoutProps) {
       </Suspense>
     </div>
   );
-} 
+}

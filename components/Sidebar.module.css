@@ -373,10 +373,7 @@
   will-change: transform, opacity, background-color;
 }
 
-/* Remover will-change de todos os elementos e aplicar apenas aos que estão animando */
-.tab, .fileItem, .folderItem {
-  /* Remover will-change daqui, pois está aplicado a TODOS os itens */
-}
+
 
 /* Aplicar apenas quando há interação real ou quando a animação está em andamento */
 .isDragging, .isHovering, .isAnimating {

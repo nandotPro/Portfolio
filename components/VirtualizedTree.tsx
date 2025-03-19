@@ -123,12 +123,6 @@ const VirtualizedTree: React.FC = () => {
             }
             <span className={styles.itemName}>{node.name}</span>
           </div>
-          
-          {isOpen && (
-            <div className={styles.folderContents}>
-              {/* Conteúdo existente já será renderizado pelo componente List */}
-            </div>
-          )}
         </div>
       );
     }

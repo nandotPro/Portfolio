@@ -294,8 +294,8 @@ const zhCN: Translations = {
     ]
   },
   errors: {
-    notFound: "文件未找到",
-    loading: "正在加载内容...",
+    notFound: "找不到文件",
+    loading: "加载内容...",
     unavailable: "内容不可用"
   }
 };

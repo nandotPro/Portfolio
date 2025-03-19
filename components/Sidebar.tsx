@@ -128,25 +128,6 @@ const FolderArrow = memo<FolderArrowProps>(({ isOpen }) => (
 
 FolderArrow.displayName = 'FolderArrow';
 
-// Corrigir definição de FileItem
-interface FileItemProps {
-  node: FileNode;
-  onClick: () => void;
-  isActive: boolean;
-}
-
-// Utilizar React.memo para componentes que não mudam frequentemente
-const FileItem = memo<FileItemProps>(({ node, onClick, isActive }) => (
-  <div 
-    className={`${styles.fileItem} ${isActive ? styles.activeFile : ''}`}
-    onClick={onClick}
-  >
-    {/* Conteúdo do item */}
-  </div>
-));
-
-FileItem.displayName = 'FileItem';
-
 // Componente principal de Sidebar também memoizado
 const Sidebar = () => {
   const { 

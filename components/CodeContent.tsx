@@ -28,7 +28,6 @@ const CodeContent: React.FC<CodeContentProps> = ({
   skipAnimation = false,
   cachedContent
 }) => {
-  // Usar o hook useCodeRenderer para gerenciar a renderização e animação
   const {
     displayedLines,
     isTyping,
@@ -42,7 +41,6 @@ const CodeContent: React.FC<CodeContentProps> = ({
     onAnimationComplete
   });
 
-  // Notificar o componente pai sobre a contagem de linhas
   React.useEffect(() => {
     onLineCountChange(lineCount);
   }, [lineCount, onLineCountChange]);
@@ -50,9 +48,8 @@ const CodeContent: React.FC<CodeContentProps> = ({
   return (
     <div className={styles.codeContentWrapper}>
       {displayedLines.map((line, index) => (
-        // Usando optional chaining para evitar erro se line for undefined
         <div key={`${activeSection}-line-${index}`} className={styles.codeLine}>
-          <span className={line?.type && styles[line.type] ? styles[line.type] : ''}>
+          <span className={line?.type ? styles[line.type] || '' : ''}>
             {line?.text || ''}
           </span>
           {index === displayedLines.length - 1 && isTyping && (
