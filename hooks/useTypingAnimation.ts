@@ -26,7 +26,9 @@ export const useTypingAnimation = ({
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, []);
 
@@ -41,7 +43,7 @@ export const useTypingAnimation = ({
       setDisplayedText([...text]);
       setCurrentLine(text.length);
       setIsComplete(true);
-      if (onComplete) onComplete([...text]);
+      onComplete?.([...text]);
       return;
     }
 
@@ -50,7 +52,9 @@ export const useTypingAnimation = ({
     }, initialDelay);
 
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, [text, initialDelay, skipAnimation, onComplete]);
 
@@ -60,14 +64,14 @@ export const useTypingAnimation = ({
     if (currentLine >= text.length) {
       setIsTyping(false);
       setIsComplete(true);
-      if (onComplete) onComplete(displayedText);
+      onComplete?.(displayedText);
       return;
     }
 
     const currentLineText = text[currentLine] || '';
 
     if (currentChar >= currentLineText.length) {
-      if (onLineTyped) onLineTyped(currentLine);
+      onLineTyped?.(currentLine);
       
       setCurrentLine(prev => prev + 1);
       setCurrentChar(0);
@@ -90,7 +94,9 @@ export const useTypingAnimation = ({
     }, speed);
 
     return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
     };
   }, [isTyping, currentLine, currentChar, text, displayedText, speed, isComplete, onLineTyped, onComplete, skipAnimation]);
 

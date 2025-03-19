@@ -102,13 +102,13 @@ export default function Editor({
     // Redimensionar a array de refs quando o número de abas mudar
     itemRefs.current = itemRefs.current.slice(0, openFiles.length);
     
-    
     // Sempre definir como false
     setShowPreview(false);
     
     // Resetar contagem de linhas visíveis ao trocar arquivo
     if (!currentFileAnimated) {
-      setVisibleLineCount(0);
+      // Começar com uma linha visível para mostrar a primeira linha
+      setVisibleLineCount(1);
       setIsAnimating(true);
     } else {
       // Se já foi animado, mostrar todas as linhas imediatamente
@@ -160,7 +160,7 @@ export default function Editor({
   };
 
   const handleLineAnimation = (currentLine: number) => {
-    setVisibleLineCount(currentLine);
+    setVisibleLineCount(currentLine + 1);
   };
 
   const handleAnimationComplete = (content: any) => {

@@ -43,7 +43,6 @@ export function useCodeRenderer({
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
-        intervalRef.current = null;
       }
     };
   }, []);
@@ -59,13 +58,8 @@ export function useCodeRenderer({
         currentLineRef.current = newContent.length;
         completedRef.current = true;
         
-        if (animationCompleteRef.current) {
-          animationCompleteRef.current(newContent);
-        }
-        
-        if (contentChangeRef.current) {
-          contentChangeRef.current(newContent.length);
-        }
+        animationCompleteRef.current?.(newContent);
+        contentChangeRef.current?.(newContent.length);
       } else {
         setDisplayedLines([]);
         setLineCount(1);
@@ -88,12 +82,13 @@ export function useCodeRenderer({
       
       if (currentLine < codeLines.length) {
         setDisplayedLines(prev => [...prev, codeLines[currentLine]]);
-        currentLineRef.current += 1;
-        setLineCount(prev => prev + 1);
         
         if (lineAnimationRef.current) {
           lineAnimationRef.current(currentLine);
         }
+        
+        currentLineRef.current += 1;
+        setLineCount(prev => prev + 1);
       } else {
         if (intervalRef.current) {
           clearInterval(intervalRef.current);

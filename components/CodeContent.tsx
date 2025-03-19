@@ -45,11 +45,17 @@ const CodeContent: React.FC<CodeContentProps> = ({
     onLineCountChange(lineCount);
   }, [lineCount, onLineCountChange]);
   
+  React.useEffect(() => {
+    if (displayedLines.length > 0 && onLineAnimation) {
+      onLineAnimation(displayedLines.length - 1);
+    }
+  }, [displayedLines.length, onLineAnimation]);
+  
   return (
     <div className={styles.codeContentWrapper}>
       {displayedLines.map((line, index) => (
         <div key={`${activeSection}-line-${index}`} className={styles.codeLine}>
-          <span className={line?.type ? styles[line.type] || '' : ''}>
+          <span className={line?.type && styles[line.type] ? styles[line.type] : ''}>
             {line?.text || ''}
           </span>
           {index === displayedLines.length - 1 && isTyping && (

@@ -38,7 +38,7 @@ export default function Layout({ children }: LayoutProps) {
     if (!fileTree) {
       setFileTree(initialFileTree);
     }
-  }, []);
+  }, [fileTree, setFileTree]);
   
   useEffect(() => {
     openFiles.forEach(file => {

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Sidebar.module.css';
 import { useEditorStore, FileNode } from '../store/editorStore';
 import { useI18nStore } from '../i18n/i18n';
-// Importação de ícones
 import { 
   ChevronRight, 
   ChevronDown, 
@@ -19,7 +18,6 @@ import {
   Info
 } from 'lucide-react';
 
-// Componente de item de arquivo memoizado para evitar re-renderizações desnecessárias
 const FileTreeItem = memo(({ 
   node, 
   level, 
@@ -36,7 +34,6 @@ const FileTreeItem = memo(({
   const isActive = activeFileId === node.id;
   const paddingLeft = `${level * 16}px`;
 
-  // Implementação de getFileIcon simplificada usando spans
   const getFileIcon = (fileType: string | undefined) => {
     switch (fileType) {
       case 'ts':
@@ -111,12 +108,10 @@ const FileTreeItem = memo(({
 
 FileTreeItem.displayName = 'FileTreeItem';
 
-// Corrigir a definição do FolderArrow
 interface FolderArrowProps {
   isOpen: boolean | undefined;
 }
 
-// Em vez de animar todos os componentes, use memo para evitar re-renderizações
 const FolderArrow = memo<FolderArrowProps>(({ isOpen }) => (
   <div className={styles.folderArrow}>
     {isOpen ? 
@@ -128,7 +123,6 @@ const FolderArrow = memo<FolderArrowProps>(({ isOpen }) => (
 
 FolderArrow.displayName = 'FolderArrow';
 
-// Componente principal de Sidebar também memoizado
 const Sidebar = () => {
   const { 
     fileTree, 
@@ -174,4 +168,4 @@ const Sidebar = () => {
   );
 };
 
-export default memo(Sidebar); 
+export default memo(Sidebar);
