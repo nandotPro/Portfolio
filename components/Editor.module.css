@@ -15,7 +15,6 @@
   white-space: nowrap;
   height: 35px;
   background-color: var(--editor-bg);
-  border-bottom: 1px solid #1e1e1e;
   position: relative;
   scrollbar-width: none;
 }
@@ -304,7 +303,6 @@
   white-space: nowrap;
   height: 35px;
   background-color: var(--editor-bg);
-  border-bottom: 1px solid #1e1e1e;
   position: relative;
   scrollbar-width: none;
 }

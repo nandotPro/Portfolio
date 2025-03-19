@@ -154,15 +154,17 @@
 }
 
 .folderArrow {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 4px;
+  margin-right: 8px;
   font-size: 16px;
   color: #aaa;
   font-weight: bold;
+  position: relative;
+  z-index: 2;
 }
 
 .itemName {
@@ -175,11 +177,23 @@
 .folderContents {
   width: 100%;
   position: relative;
+  margin-left: 12px;
 }
 
-/* Remover a linha vertical problemática */
 .folderContents::before {
-  content: none;
+  content: '';
+  position: absolute;
+  left: -5px; /* Valor funcional para a pasta principal */
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #424242;
+  z-index: 1;
+}
+
+/* Ajuste para subpastas (nível 2 e além) */
+.folderContents .folderContents::before {
+  left: 11px; /* Ajustado para mover a linha vertical para a direita */
 }
 
 /* Classes para os diferentes tipos de ícones */
@@ -272,4 +286,10 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* Garantir que os ícones fiquem por cima das linhas */
+.folderIcon, .fileIcon {
+  position: relative;
+  z-index: 2;
 } 
