@@ -27,7 +27,7 @@ interface EditorState {
   fileTree: FileNode | null;
   openFiles: OpenFile[];
   activeFileId: string | null;
-  fileContents?: Record<string, any>;
+  fileContents: Record<string, any>;
 
   // Ações
   openProject: (path: string, fileId: string, fileName: string) => void;
@@ -44,7 +44,7 @@ interface EditorState {
 export const useEditorStore = create<EditorState>()(
   immer((set, get) => ({
     fileTree: null,
-    openFiles: [],
+    openFiles: [] as OpenFile[],
     activeFileId: null,
     fileContents: {},
 
@@ -158,73 +158,9 @@ export const useEditorStore = create<EditorState>()(
     }),
 
     getContentForSection: (section: string) => {
-      // Obter o conteúdo traduzido da store de i18n
-      // Nota: Isso cria uma dependência circular, que será resolvida abaixo
-      return useI18nStore.getState().getContentForSection(section);
+      // Usar getState() para acessar o estado atual do i18nStore sem criar dependência circular
+      const i18nStore = useI18nStore.getState();
+      return i18nStore.getContentForSection(section);
     }
   }))
 );
-
-// Função auxiliar para obter conteúdo com base na seção
-const getContentForSection = (section: string): CodeLine[] => {
-  switch(section) {
-    case 'about':
-      return [
-        { text: '/**', type: 'comment' },
-        { text: ' * Sobre Mim', type: 'comment' },
-        { text: ' */', type: 'comment' },
-        { text: 'const aboutMe = {', type: 'keyword' },
-        { text: '  nome: "Seu Nome",', type: 'string' },
-        { text: '  cargo: "Desenvolvedor Frontend",', type: 'string' },
-        { text: '  localização: "Sua Cidade, País",', type: 'string' },
-        { text: '  interesses: ["React", "TypeScript", "UI/UX", "Animações"],', type: 'variable' },
-        { text: '  experiência: 5, // anos', type: 'variable' },
-        { text: '', type: 'default' },
-        { text: '  educação: {', type: 'default' },
-        { text: '    graduação: "Ciência da Computação",', type: 'string' },
-        { text: '    universidade: "Universidade XYZ",', type: 'string' },
-        { text: '    conclusão: 2020', type: 'variable' },
-        { text: '  },', type: 'default' },
-        { text: '', type: 'default' },
-        { text: '  sobre() {', type: 'function' },
-        { text: '    return `Sou um desenvolvedor apaixonado por criar interfaces interativas e experiências de usuário incríveis.`;', type: 'string' },
-        { text: '  }', type: 'function' },
-        { text: '};', type: 'default' },
-        { text: '', type: 'default' },
-        { text: 'export default aboutMe;', type: 'keyword' }
-      ];
-    case 'contact':
-      return [
-        { text: '/**', type: 'comment' },
-        { text: ' * Contato', type: 'comment' },
-        { text: ' */', type: 'comment' },
-        { text: 'const contact = {', type: 'keyword' },
-        { text: '  email: "seu.email@exemplo.com",', type: 'string' },
-        { text: '  telefone: "+XX (XX) XXXXX-XXXX",', type: 'string' },
-        { text: '  redes: {', type: 'default' },
-        { text: '    github: "https://github.com/seuusuario",', type: 'string' },
-        { text: '    linkedin: "https://linkedin.com/in/seuusuario",', type: 'string' },
-        { text: '    twitter: "https://twitter.com/seuusuario",', type: 'string' },
-        { text: '  },', type: 'default' },
-        { text: '', type: 'default' },
-        { text: '  getInTouch() {', type: 'function' },
-        { text: '    console.log("Envie-me uma mensagem!");', type: 'function' },
-        { text: '    return true;', type: 'keyword' },
-        { text: '  }', type: 'function' },
-        { text: '};', type: 'default' },
-        { text: '', type: 'default' },
-        { text: 'export default contact;', type: 'keyword' }
-      ];
-    // Adicione aqui os outros casos
-    default:
-      return [
-        { text: `// Conteúdo para "${section}" ainda não está disponível`, type: 'comment' },
-        { text: 'const comingSoon = () => {', type: 'function' },
-        { text: '  console.log("Em breve!");', type: 'function' },
-        { text: '  return "Estamos trabalhando nisso...";', type: 'keyword' },
-        { text: '};', type: 'function' },
-        { text: '', type: 'default' },
-        { text: 'export default comingSoon;', type: 'keyword' }
-      ];
-  }
-}; 

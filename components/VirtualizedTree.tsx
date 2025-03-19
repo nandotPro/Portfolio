@@ -3,9 +3,12 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { useEditorStore, FileNode } from '../store/editorStore';
 import styles from './Sidebar.module.css';
-import { VscFolder, VscFolderOpened, VscChevronRight, VscChevronDown, VscFile } from 'react-icons/vsc';
-import { SiTypescript } from 'react-icons/si';
-import { DiJavascript1 } from 'react-icons/di';
+import { 
+  ChevronRight, 
+  ChevronDown, 
+  Folder,
+  FolderOpen
+} from 'lucide-react';
 
 // Função para transformar a estrutura de árvore em uma lista plana para virtualização
 const flattenTree = (node: FileNode, level = 0, expandedMap: Record<string, boolean>): Array<{node: FileNode, level: number}> => {
@@ -95,18 +98,6 @@ const VirtualizedTree: React.FC = () => {
     const isActive = activeFileId === node.id;
     const paddingLeft = `${level * 16}px`;
     
-    // Obter o ícone para o tipo de arquivo
-    const getFileIcon = (fileType: string | undefined) => {
-      switch (fileType) {
-        case 'ts':
-          return <SiTypescript className={`${styles.fileIcon} ${styles.iconTS}`} />;
-        case 'js':
-          return <DiJavascript1 className={`${styles.fileIcon} ${styles.iconJS}`} />;
-        default:
-          return <VscFile className={styles.fileIcon} />;
-      }
-    };
-    
     if (node.isFolder) {
       const isOpen = node.isOpen || expandedMap[node.id];
       
@@ -119,13 +110,13 @@ const VirtualizedTree: React.FC = () => {
           >
             <div className={styles.folderArrow}>
               {isOpen ? 
-                <VscChevronDown /> : 
-                <VscChevronRight />
+                <ChevronDown size={14} /> : 
+                <ChevronRight size={14} />
               }
             </div>
             {isOpen ? 
-              <VscFolderOpened className={`${styles.folderIcon} ${styles.iconFolderOpen}`} /> : 
-              <VscFolder className={`${styles.folderIcon} ${styles.iconFolder}`} />
+              <FolderOpen size={18} className={`${styles.folderIcon} ${styles.iconFolderOpen}`} /> : 
+              <Folder size={18} className={`${styles.folderIcon} ${styles.iconFolder}`} />
             }
             <span className={styles.itemName}>{node.name}</span>
           </div>
@@ -140,7 +131,24 @@ const VirtualizedTree: React.FC = () => {
           onClick={() => handleFileClick(node.path, node.id, node.name)}
           style={{ paddingLeft }}
         >
-          {getFileIcon(node.fileType)}
+          <span className={styles.tabIcon}>
+            {(() => {
+              const fileType = node.fileType;
+              if (fileType === 'ts') {
+                return <span className={`${styles.fileIcon} ${styles.iconTS}`}>TS</span>;
+              } else if (fileType === 'tsx') {
+                return <span className={`${styles.fileIcon} ${styles.iconReact}`}>R</span>;
+              } else if (fileType === 'js') {
+                return <span className={`${styles.fileIcon} ${styles.iconJS}`}>JS</span>;
+              } else if (fileType === 'md') {
+                return <span className={`${styles.fileIcon} ${styles.iconMD}`}>MD</span>;
+              } else if (fileType === 'json') {
+                return <span className={`${styles.fileIcon} ${styles.iconJSON}`}>{ }</span>;
+              } else {
+                return <span className={styles.fileIcon}>F</span>;
+              }
+            })()}
+          </span>
           <span className={styles.itemName}>{node.name}</span>
         </div>
       </div>

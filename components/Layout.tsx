@@ -5,6 +5,7 @@ import styles from './Layout.module.css';
 import { useEditorStore } from '../store/editorStore';
 import { useI18nStore } from '../i18n/i18n';
 import { initialFileTree } from '../data/fileTreeData';
+import { ErrorBoundary } from './ErrorBoundary';
 
 // Substituindo importações diretas por lazy loading
 const Sidebar = lazy(() => import('./Sidebar'));
@@ -62,9 +63,11 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className={styles.container}>
       <div className={styles.editorContainer}>
-        <Suspense fallback={<SidebarFallback />}>
-          <Sidebar />
-        </Suspense>
+        <ErrorBoundary fallback={<div>Algo deu errado</div>}>
+          <Suspense fallback={<SidebarFallback />}>
+            <Sidebar />
+          </Suspense>
+        </ErrorBoundary>
         <Suspense fallback={<EditorFallback />}>
           <Editor 
             openFiles={openFiles}

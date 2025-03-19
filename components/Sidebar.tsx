@@ -1,15 +1,20 @@
 'use client';
 
-import { useEffect, memo } from 'react';
+import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Sidebar.module.css';
 import { useEditorStore, FileNode } from '../store/editorStore';
 import { useI18nStore } from '../i18n/i18n';
-import VirtualizedTree from './VirtualizedTree';
 // Importação de ícones
-import { VscFolder, VscFolderOpened, VscChevronRight, VscChevronDown, VscFile, VscNewFile, VscNewFolder, VscRefresh } from 'react-icons/vsc';
-import { SiTypescript } from 'react-icons/si';
-import { DiJavascript1 } from 'react-icons/di';
+import { 
+  ChevronRight, 
+  ChevronDown, 
+  Folder,
+  FolderOpen,
+  FilePlus,
+  FolderPlus,
+  RefreshCw
+} from 'lucide-react';
 
 // Componente de item de arquivo memoizado para evitar re-renderizações desnecessárias
 const FileTreeItem = memo(({ 
@@ -28,14 +33,21 @@ const FileTreeItem = memo(({
   const isActive = activeFileId === node.id;
   const paddingLeft = `${level * 16}px`;
 
+  // Implementação de getFileIcon simplificada usando spans
   const getFileIcon = (fileType: string | undefined) => {
     switch (fileType) {
       case 'ts':
-        return <SiTypescript className={`${styles.fileIcon} ${styles.iconTS}`} />;
+        return <span className={`${styles.fileIcon} ${styles.iconTS}`}>TS</span>;
+      case 'tsx':
+        return <span className={`${styles.fileIcon} ${styles.iconReact}`}>R</span>;
       case 'js':
-        return <DiJavascript1 className={`${styles.fileIcon} ${styles.iconJS}`} />;
+        return <span className={`${styles.fileIcon} ${styles.iconJS}`}>JS</span>;
+      case 'md':
+        return <span className={`${styles.fileIcon} ${styles.iconMD}`}>MD</span>;
+      case 'json':
+        return <span className={`${styles.fileIcon} ${styles.iconJSON}`}>{ }</span>;
       default:
-        return <VscFile className={styles.fileIcon} />;
+        return <span className={styles.fileIcon}>F</span>;
     }
   };
 
@@ -49,13 +61,13 @@ const FileTreeItem = memo(({
         >
           <div className={styles.folderArrow}>
             {node.isOpen ? 
-              <VscChevronDown /> : 
-              <VscChevronRight />
+              <ChevronDown size={14} /> : 
+              <ChevronRight size={14} />
             }
           </div>
           {node.isOpen ? 
-            <VscFolderOpened className={`${styles.folderIcon} ${styles.iconFolderOpen}`} /> : 
-            <VscFolder className={`${styles.folderIcon} ${styles.iconFolder}`} />
+            <FolderOpen size={18} className={`${styles.folderIcon} ${styles.iconFolderOpen}`} /> : 
+            <Folder size={18} className={`${styles.folderIcon} ${styles.iconFolder}`} />
           }
           <span className={styles.itemName}>{node.name}</span>
         </div>
@@ -123,13 +135,13 @@ const Sidebar = () => {
         <span>{t('ui.explorer')}</span>
         <div className={styles.explorerActions}>
           <div className={styles.fakeButton}>
-            <VscNewFile size={16} />
+            <FilePlus size={16} />
           </div>
           <div className={styles.fakeButton}>
-            <VscNewFolder size={16} />
+            <FolderPlus size={16} />
           </div>
           <div className={styles.fakeButton}>
-            <VscRefresh size={16} />
+            <RefreshCw size={16} />
           </div>
         </div>
       </div>

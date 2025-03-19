@@ -322,7 +322,7 @@ export const useI18nStore = create<{
     
     t: (key: string) => {
       const { currentLanguage, translations } = get();
-      const currentTranslations = translations[currentLanguage];
+      const currentTranslations = translations[currentLanguage] || {};
       
       // Navegar pela estrutura de objetos para encontrar a tradução
       const keys = key.split('.');
@@ -344,8 +344,12 @@ export const useI18nStore = create<{
       const { currentLanguage, translations } = get();
       const currentTranslations = translations[currentLanguage];
       
-      // Verificar se a seção existe nas traduções de conteúdo
-      if (currentTranslations.content && section in currentTranslations.content) {
+      // Verificar se a seção existe nas traduções de conteúdo e é um array
+      if (
+        currentTranslations.content && 
+        section in currentTranslations.content &&
+        Array.isArray(currentTranslations.content[section as keyof typeof currentTranslations.content])
+      ) {
         return currentTranslations.content[section as keyof typeof currentTranslations.content];
       }
       

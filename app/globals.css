@@ -71,3 +71,25 @@ a {
   color: var(--matrix-green);
   text-shadow: 0 0 5px var(--matrix-green), 0 0 10px var(--matrix-green-glow);
 }
+
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #555 var(--editor-bg);
+  }
+}
+
+/* Adicionar regras de scrollbar para navegadores WebKit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--editor-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}

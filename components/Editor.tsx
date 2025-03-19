@@ -2,15 +2,19 @@
 
 import { useState, useEffect, useRef } from 'react';
 import styles from './Editor.module.css';
-import ProjectPreview from './ProjectPreview';
 import dynamic from 'next/dynamic';
 import { OpenFile } from '../store/editorStore';
-import { useDragDrop } from '../hooks/useDragDrop';
 import { useEditorStore } from '../store/editorStore';
-import { DiReact } from 'react-icons/di';
-import { SiTypescript } from 'react-icons/si';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTabManagement } from '../hooks/useTabManagement';
+import { 
+  File,
+  FileJson,
+  FileType,
+  Code2,
+  Atom,
+  FileText
+} from 'lucide-react';
 
 // Lazy loading do componente CodeContent
 const CodeContent = dynamic(() => import('./CodeContent'), {
@@ -112,7 +116,12 @@ export default function Editor({
   }, [activeFileId, currentFileAnimated, openFiles.length, currentFileContent, lineCount, itemRefs]);
 
   useEffect(() => {
-    // Garantir que os números de linha estejam alinhados com o conteúdo do código
+    // Verificar se o navegador suporta ResizeObserver
+    if (typeof ResizeObserver === 'undefined') {
+      console.warn('ResizeObserver não é suportado neste navegador');
+      return;
+    }
+    
     const codeArea = codeAreaRef.current;
     if (codeArea) {
       // Ajustar a altura dos números de linha para corresponder exatamente à altura do conteúdo
@@ -204,9 +213,21 @@ export default function Editor({
                 onDragLeave={handleDragLeave}
               >
                 <span className={styles.tabIcon}>
-                  {getTabIcon(file.id) === 'typescript' ? 
-                    <SiTypescript className={styles.iconTS} /> : 
-                    <DiReact className={styles.iconReact} />}
+                  {(() => {
+                    if (file.id.endsWith('.ts')) {
+                      return <FileType size={16} className={styles.iconTS} />;
+                    } else if (file.id.endsWith('.tsx')) {
+                      return <Atom size={16} className={styles.iconReact} />;
+                    } else if (file.id.endsWith('.js') || file.id.endsWith('.jsx')) {
+                      return <Code2 size={16} className={styles.iconJS} />;
+                    } else if (file.id.endsWith('.md')) {
+                      return <FileText size={16} className={styles.iconMD} />;
+                    } else if (file.id.endsWith('.json')) {
+                      return <FileJson size={16} className={styles.iconJSON} />;
+                    } else {
+                      return <File size={16} />;
+                    }
+                  })()}
                 </span>
                 <span className={styles.tabTitle}>{file.name}</span>
                 <span 

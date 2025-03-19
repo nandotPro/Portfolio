@@ -11,19 +11,44 @@
   flex-direction: row;
   flex-wrap: nowrap;
   overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   height: 35px;
   background-color: var(--editor-bg);
   border-bottom: 1px solid #1e1e1e;
   position: relative;
+  scrollbar-width: none;
 }
 
-.tabsBar::-webkit-scrollbar {
-  height: 2px;
+.tabs::-webkit-scrollbar {
+  height: 4px;
+  width: 0;
 }
 
-.tabsBar::-webkit-scrollbar-thumb {
-  background-color: #333;
+.tabs::-webkit-scrollbar-vertical {
+  display: none;
+}
+
+.tabs::-webkit-scrollbar:vertical {
+  width: 0;
+  display: none;
+}
+
+.tabs::-webkit-scrollbar-horizontal {
+  height: 4px;
+}
+
+.tabs::-webkit-scrollbar-track {
+  background: var(--editor-bg);
+}
+
+.tabs::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.tabs::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
 }
 
 .tab {
@@ -167,29 +192,34 @@
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
-/* Adicione estes estilos para os ícones nas abas */
+/* Estilos para os ícones nas abas */
 .tabIcon {
   margin-right: 6px;
-  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 16px;
+  height: 16px;
 }
 
 .iconTS {
-  color: #3ac9fe; /* Azul para TypeScript */
+  color: #3178c6 !important;
 }
 
-/* Novo estilo para o ícone React */
 .iconReact {
-  color: #61dafb; /* Azul claro característico do React */
+  color: #61dafb !important;
 }
 
-.tabContent {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.iconJS {
+  color: #f7df1e !important;
+}
+
+.iconMD {
+  color: #42a5f5 !important;
+}
+
+.iconJSON {
+  color: #fbc02d !important;
 }
 
 /* Estilo para a aba sendo arrastada */
@@ -269,11 +299,13 @@
   flex-direction: row;
   flex-wrap: nowrap;
   overflow-x: auto;
+  overflow-y: hidden;
   white-space: nowrap;
   height: 35px;
   background-color: var(--editor-bg);
   border-bottom: 1px solid #1e1e1e;
-  position: relative; /* Necessário para posicionamento absoluto do indicador */
+  position: relative;
+  scrollbar-width: none;
 }
 
 /* Estilo para destacar a área de destino durante o drag */

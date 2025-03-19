@@ -50,18 +50,15 @@ const CodeContent: React.FC<CodeContentProps> = ({
   return (
     <div className={styles.codeContentWrapper}>
       {displayedLines.map((line, index) => (
-        // Verificar se line está definida antes de acessar suas propriedades
-        line ? (
-          <div key={`${activeSection}-line-${index}`} className={styles.codeLine}>
-            <span className={line.type && styles[line.type] ? styles[line.type] : ''}>{line.text}</span>
-            {index === displayedLines.length - 1 && isTyping && (
-              <span className={styles.cursor} />
-            )}
-          </div>
-        ) : (
-          // Adicionar uma linha vazia mas com a mesma altura para manter o alinhamento
-          <div key={`${activeSection}-empty-${index}`} className={styles.codeLine}>&nbsp;</div>
-        )
+        // Usando optional chaining para evitar erro se line for undefined
+        <div key={`${activeSection}-line-${index}`} className={styles.codeLine}>
+          <span className={line?.type && styles[line.type] ? styles[line.type] : ''}>
+            {line?.text || ''}
+          </span>
+          {index === displayedLines.length - 1 && isTyping && (
+            <span className={styles.cursor} />
+          )}
+        </div>
       ))}
     </div>
   );
