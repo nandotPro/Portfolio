@@ -1,0 +1,394 @@
+.sidebar {
+  width: 250px;
+  background-color: var(--sidebar-bg);
+  overflow-y: auto;
+  overflow-x: hidden !important;
+  border-right: 1px solid var(--border-color);
+  height: 100%;
+  z-index: 10;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  position: relative;
+}
+
+.explorerSection {
+  padding: 0;
+}
+
+.explorerHeader {
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 35px;
+  font-weight: bold;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8c8c8c;
+  border-bottom: 1px solid #1e1e1e;
+  position: relative;
+}
+
+.explorerActions {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.fakeButton {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #858585;
+  cursor: pointer;
+  transition: color 0.2s;
+  background: transparent;
+  border-radius: 3px;
+}
+
+.fakeButton:hover {
+  color: #ffffff;
+  background-color: #383838;
+}
+
+/* Remover as regras específicas para os ícones macOS que não são mais necessárias */
+.fakeButton:nth-child(1),
+.fakeButton:nth-child(2),
+.fakeButton:nth-child(3) {
+  background-color: transparent;
+}
+
+.fakeButton:nth-child(1):hover::after,
+.fakeButton:nth-child(2):hover::after,
+.fakeButton:nth-child(3):hover::after {
+  content: none;
+}
+
+.actionButton {
+  color: #cccccc;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  line-height: 1;
+}
+
+.actionButton:hover {
+  color: #ffffff;
+}
+
+.sectionHeader {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #ccc;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.sectionHeader:hover {
+  background-color: #1e1e1e;
+}
+
+.fileTree {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.folderItem, .fileItem {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.1s ease-out, background-color 0.15s ease-out;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  height: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.folderItem {
+  color: #ccc;
+}
+
+.fileItem {
+  color: #bbb;
+}
+
+.activeFile {
+  background-color: #37373d;
+  color: #ffffff;
+}
+
+.folderItem:hover, .fileItem:hover {
+  background-color: #2a2a2a;
+}
+
+/* Tamanho padrão para ícones de arquivos */
+.fileIcon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 10px;
+  border-radius: 2px;
+  margin-right: 8px;
+  transform: translateZ(0);
+}
+
+/* Tamanho maior apenas para ícones de pastas */
+.folderIcon {
+  width: auto !important;
+  height: auto !important;
+  color: inherit;
+  margin-right: 6px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  transform: translateZ(0);
+}
+
+.folderArrow {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  font-size: 16px;
+  color: #aaa;
+  font-weight: bold;
+  position: relative;
+  z-index: 2;
+}
+
+.itemName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-top: 2px;
+  min-width: 0;
+}
+
+.folderContents {
+  position: relative;
+  margin-left: 12px;
+  max-width: 100%;
+  overflow-x: hidden !important;
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  box-sizing: border-box;
+}
+
+.folderContents::before {
+  content: '';
+  position: absolute;
+  left: -5px; /* Valor funcional para a pasta principal */
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #424242;
+  z-index: 1;
+}
+
+/* Ajuste para subpastas (nível 2 e além) */
+.folderContents .folderContents::before {
+  left: 11px; /* Ajustado para mover a linha vertical para a direita */
+}
+
+/* Classes para os diferentes tipos de ícones */
+.iconFolder, .iconFolderOpen {
+  color: var(--text-color) !important;
+}
+
+.iconTS {
+  background-color: transparent;
+  color: #509df0 !important;
+  font-weight: bold;
+}
+
+.iconJS {
+  background-color: #f7df1e;
+  color: black;
+}
+
+.iconHTML {
+  color: var(--icon-html-color);
+}
+
+.iconCSS {
+  color: var(--icon-css-color);
+}
+
+.iconJSON {
+  color: #8cc84b !important; /* Verde típico do Node.js */
+}
+
+.iconReact {
+  color: #61dafb !important; /* Cor azul do React */
+}
+
+.iconMD {
+  color: var(--icon-md-color) !important;
+}
+
+/* Adicionar estes estilos no Sidebar.module.css */
+/* Ajuste específico para ícones VSCode que podem precisar de tamanho especial */
+.iconReact,
+.iconMD,
+.iconJSON {
+  font-size: 16px; /* Tamanho ligeiramente maior para melhor visualização */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Regra de mídia para dispositivos móveis */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid #1e1e1e;
+  }
+}
+
+/* Ajuste específico para o ícone de colapsar */
+.collapseButton {
+  position: relative;
+  top: -2px; /* Ajusta a posição vertical */
+}
+
+.virtualTreeContainer {
+  width: 100%;
+  height: calc(100% - 30px); /* Ajuste de acordo com a altura do cabeçalho do explorador */
+  overflow: hidden;
+}
+
+/* Ajuste o estilo das barras de rolagem se necessário */
+.virtualTreeContainer div::-webkit-scrollbar {
+  width: 8px;
+}
+
+.virtualTreeContainer div::-webkit-scrollbar-track {
+  background: var(--editor-bg);
+}
+
+.virtualTreeContainer div::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+  border: 2px solid var(--editor-bg);
+}
+
+/* Adicionar esse estilo específico para SVG */
+.fileIcon svg, .folderIcon svg, .tabIcon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Garantir que os ícones fiquem por cima das linhas */
+.folderIcon, .fileIcon {
+  position: relative;
+  z-index: 2;
+}
+
+/* Efeito mais notável ao clicar em um arquivo */
+.fileItem {
+  transition: transform 0.1s ease, background-color 0.15s ease-out;
+}
+
+.fileItem:active {
+  transform: translateY(2px) scale(0.99); /* Movimento para baixo e leve redução de escala */
+  background-color: rgba(100, 100, 255, 0.05); /* Sutil tom azulado */
+  transition: transform 0.1s ease, background-color 0.1s ease;
+}
+
+/* Melhorar a transição de hover também */
+.fileItem, .folderItem {
+  transition: transform 0.1s ease-out, background-color 0.15s ease-out;
+}
+
+.fileItem:hover, .folderItem:hover {
+  box-shadow: inset 0 0 0 100px rgba(255, 255, 255, 0.04);
+}
+
+/* Rotação mais perceptível da seta ao passar o mouse */
+.folderArrow svg {
+  transition: transform 0.2s ease-out;
+}
+
+.folderItem:hover .folderArrow svg:not([data-opened="true"]) {
+  transform: translateX(2px) rotate(5deg); /* Adicionei rotação de 5 graus */
+}
+
+/* Para setas que apontam para baixo (pastas abertas) */
+.folderItem:hover .folderArrow svg[data-opened="true"] {
+  transform: translateY(2px) rotate(5deg); /* Aumentei para 2px e adicionei rotação */
+}
+
+/* Efeito ao clicar em um arquivo */
+.fileItem:active {
+  transform: translateY(1px); /* Movimento muito sutil para baixo */
+  transition: transform 0.1s ease;
+}
+
+.fileItem {
+  transition: transform 0.1s ease, background-color 0.15s ease-out;
+}
+
+/* Otimizações de performance para animações */
+.folderContents {
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Força aceleração de hardware */
+  backface-visibility: hidden;
+}
+
+.tab, .fileItem, .folderItem {
+  will-change: transform, opacity, background-color;
+}
+
+.treeContainer {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Limitar will-change a elementos que realmente precisam */
+.tab, .fileItem:hover, .folderItem:hover {
+  will-change: transform, opacity, background-color;
+}
+
+
+
+/* Aplicar apenas quando há interação real ou quando a animação está em andamento */
+.isDragging, .isHovering, .isAnimating {
+  will-change: transform, opacity;
+}
+
+/* Substituir box-shadow e filter por border mais eficiente onde possível */
+.folderItem.active, .fileItem.active {
+  /* Em vez de: box-shadow: 0 0 0 1px rgba(77, 120, 204, 0.5); */
+  border-left: none;
+  /* border é mais eficiente que box-shadow */
+  color: #ffffff; /* Manter apenas uma cor de texto mais clara para indicar seleção */
+}
+
+/* Remover quaisquer outros estilos que possam estar adicionando o indicador azul */
+.fileItem.active::before {
+  display: none;
+} 

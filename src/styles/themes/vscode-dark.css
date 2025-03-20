@@ -1,0 +1,28 @@
+:root {
+  /* Cores principais */
+  --editor-bg: #1e1e1e;
+  --sidebar-bg: #252526;
+  --footer-bg: #007acc;
+  --text-color: #cccccc;
+  --line-number-color: #858585;
+  
+  /* Cores de destaque e interações */
+  --active-tab-border: #4d78cc;
+  --hover-bg: #2a2a2a;
+  --active-item-bg: #37373d;
+  
+  /* Cores específicas dos ícones */
+  --icon-ts-color: #509df0;
+  --icon-js-color: #f7df1e;
+  --icon-html-color: #e44d26;
+  --icon-css-color: #264de4;
+  --icon-json-color: #8cc84b;
+  --icon-react-color: #61dafb;
+  --icon-md-color: #cccccc;
+  
+  /* Cores para elementos da interface */
+  --border-color: #1e1e1e;
+  --scrollbar-track: var(--editor-bg);
+  --scrollbar-thumb: #555;
+  --scrollbar-thumb-hover: #777;
+} 

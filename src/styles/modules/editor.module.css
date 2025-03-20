@@ -1,0 +1,544 @@
+.editorWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--editor-bg);
+  height: 100%;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  height: 35px;
+  background-color: var(--editor-bg);
+  position: relative;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  height: 4px;
+  width: 0;
+}
+
+.tabs::-webkit-scrollbar-vertical {
+  display: none;
+}
+
+.tabs::-webkit-scrollbar:vertical {
+  width: 0;
+  display: none;
+}
+
+.tabs::-webkit-scrollbar-horizontal {
+  height: 4px;
+}
+
+.tabs::-webkit-scrollbar-track {
+  background: var(--editor-bg);
+}
+
+.tabs::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.tabs::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-right: 1px solid #252525;
+  background-color: #2d2d2d;
+  height: 35px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  min-width: 120px;
+  max-width: 200px;
+  overflow: hidden;
+  transition: background-color 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+.tab:hover:not(.activeTab) {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-bottom-color: rgba(77, 120, 204, 0.2);
+}
+
+.activeTab {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #4d78cc;
+  transition: background-color 0.3s ease, border-bottom-color 0.3s ease;
+  animation: tabActivate 0.5s ease-out forwards;
+}
+
+.tabTitle {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  border-radius: 3px;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.tab:hover .closeButton {
+  opacity: 1;
+}
+
+.closeButton:hover {
+  transform: scale(1.1);
+  color: #ff6b6b !important;
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+  color: #ff4444 !important;
+}
+
+.editorContainer {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.codeArea {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  overflow: auto;
+  background-color: var(--editor-bg);
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  scrollbar-width: thin;
+  scrollbar-color: #555 var(--editor-bg);
+}
+
+.lineNumbers {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 8px 10px 16px;
+  background-color: var(--editor-bg);
+  border-right: 1px solid #1e1e1e;
+  user-select: none;
+  text-align: right;
+  min-width: 40px;
+  overflow: hidden;
+}
+
+.lineNumber {
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--line-number-color);
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transform: none;
+}
+
+.codeContent {
+  flex: 1;
+  padding-left: 10px;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.welcomeScreen {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--editor-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcomeScreen::before {
+  content: none;
+}
+
+.welcomeText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.welcomeTitle {
+  font-size: 48px;
+  font-weight: bold;
+  color: rgba(180, 180, 180, 0.15);
+  text-shadow: none;
+  margin-bottom: 20px;
+  letter-spacing: 5px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.welcomeSubtitle {
+  font-size: 18px;
+  color: rgba(180, 180, 180, 0.3);
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Estilos para os ícones nas abas */
+.tabIcon {
+  margin-right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+/* Cores dos ícones correspondentes às do Sidebar */
+.iconTS {
+  color: var(--icon-ts-color) !important;
+}
+
+.iconJS {
+  color: var(--icon-js-color) !important;
+}
+
+.iconReact {
+  color: var(--icon-react-color) !important;
+}
+
+.iconJSON {
+  color: var(--icon-json-color) !important;
+}
+
+.iconMD {
+  color: var(--icon-md-color) !important;
+}
+
+/* Estilo para a aba sendo arrastada */
+.draggingTab {
+  opacity: 0.7;
+  background-color: #3c3c3c;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Indicador de local de soltura */
+.dropIndicator {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #4d78cc;
+  box-shadow: 0 0 4px rgba(77, 120, 204, 0.6);
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  /* Importante: garantir que o indicador fique contido na área das abas */
+  max-height: 35px; /* igual à altura das abas */
+}
+
+/* Atualização para o CodeContent.module.css */
+/* Estas mudanças devem ser aplicadas ao CodeContent.module.css */
+.codeContentWrapper {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-color);
+  overflow-x: auto;
+  min-height: 100%;
+}
+
+.codeLine {
+  white-space: pre;
+  height: 24px;
+  line-height: 24px;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+/* Adicione estas regras para garantir rolagem sincronizada */
+.codeArea {
+  scrollbar-width: thin;
+  scrollbar-color: #555 var(--editor-bg);
+  overflow: auto;
+}
+
+.lineNumbers, .codeContent {
+  overflow: hidden; /* Previne rolagem individual */
+}
+
+/* Estilizar a barra de rolagem para navegadores webkit */
+.codeArea::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.codeArea::-webkit-scrollbar-track {
+  background: var(--editor-bg);
+}
+
+.codeArea::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 5px;
+  border: 2px solid var(--editor-bg);
+}
+
+/* Adicione ao Editor.module.css */
+.tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  height: 35px;
+  background-color: var(--editor-bg);
+  position: relative;
+  scrollbar-width: none;
+}
+
+/* Estilo para destacar a área de destino durante o drag */
+.dragOverLeft {
+  box-shadow: inset 2px 0 0 0 #4d78cc;
+}
+
+.dragOverRight {
+  box-shadow: inset -2px 0 0 0 #4d78cc;
+}
+
+/* Adicionar um leve flash ao ativar uma aba */
+@keyframes tabActivate {
+  0% { background-color: rgba(77, 120, 204, 0.15); }
+  30% { background-color: rgba(77, 120, 204, 0.08); }
+  100% { background-color: #1e1e1e; }
+}
+
+.activeTab {
+  animation: tabActivate 0.5s ease-out forwards;
+}
+
+/* Adicionando um destaque mais pronunciado */
+.tab:not(.activeTab):hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
+  transition: background-color 0.2s ease, transform 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+/* Estilos para diferentes tipos de texto */
+.plainText {
+  color: #ffffff;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.linkText {
+  color: #4da3ff; /* Cor de link no VSCode */
+  text-decoration: underline;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Nova classe para links roxos com sublinhado mais separado */
+.purpleLink {
+  color: #a380fc; /* Cor roxa semelhante à do VSCode */
+  text-decoration: underline;
+  text-underline-offset: 3px; /* Separa mais a linha sublinhada do texto */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer; /* Muda o cursor para mãozinha */
+  display: inline-block; /* Necessário para a transformação */
+  transition: transform 0.15s ease, box-shadow 0.15s ease; /* Transição suave */
+  position: relative; /* Para posicionamento do tooltip */
+}
+
+.purpleLink:hover {
+  transform: scale(1.03); /* Cresce levemente ao passar o mouse */
+  text-shadow: 0 0 2px rgba(197, 134, 192, 0.3); /* Leve brilho */
+}
+
+.purpleLink:active {
+  transform: scale(0.98); /* Diminui levemente ao clicar */
+}
+
+/* Estilos para o tooltip de "follow link" */
+.linkTooltip {
+  position: absolute;
+  top: -30px; /* Posição acima do link */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #252526; /* Cor de fundo típica do VS Code */
+  color: #e0e0e0;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none; /* Não interfere com cliques */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #3e3e42;
+  z-index: 100;
+}
+
+/* Seta para baixo no tooltip */
+.linkTooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #252526 transparent transparent transparent;
+}
+
+/* Mostrar tooltip no hover */
+.purpleLink:hover .linkTooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.commentText {
+  color: #6a9955; /* Verde para comentários */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.keywordText {
+  color: #569cd6; /* Azul para palavras-chave */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.stringText {
+  color: #ce9178; /* Laranja para strings */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Estilos para o container de conteúdo */
+.codeContentWrapper {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  padding: 8px 0;
+  white-space: pre;
+  tab-size: 2;
+  overflow-x: auto;
+}
+
+.codeLine {
+  padding: 0 8px;
+  min-height: 20px;
+  line-height: 20px;
+}
+
+/* Adicionar estilo para o cursor piscante */
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background-color: #ffffff;
+  animation: blink 1s step-end infinite;
+  margin-left: 1px;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Estilos adicionais para formatação JSON similar ao VS Code */
+.jsonMainBracket {
+  color: #ffc53e; /* Amarelo para brackets principais */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jsonNestedBracket {
+  color: #ff6df3; /* Roxo para brackets aninhados */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jsonPropertyKey {
+  color: #a5f8f4; /* Verde ciano para chaves de propriedades */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jsonPropertyValue {
+  color: #f89ffa; /* Laranja/roxo para valores de propriedades */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jsonPunctuation {
+  color: #ffffff; /* Branco para vírgulas e dois-pontos */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Estilos para indentação JSON */
+.indent0 {
+  padding-left: 0;
+}
+
+.indent1 {
+  padding-left: 16px; /* Primeiro nível de indentação */
+}
+
+.indent2 {
+  padding-left: 32px; /* Segundo nível de indentação */
+}
+
+.indent3 {
+  padding-left: 48px; /* Terceiro nível de indentação */
+}
+
+.indent4 {
+  padding-left: 64px; /* Quarto nível de indentação */
+}
+
+/* Ajuste para alinhar todas as linhas */
+.codeLine {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.5;
+  min-height: 20px;
+} 
