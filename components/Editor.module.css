@@ -364,6 +364,68 @@
   line-height: 1.5;
 }
 
+/* Nova classe para links roxos com sublinhado mais separado */
+.purpleLink {
+  color: #a380fc; /* Cor roxa semelhante à do VSCode */
+  text-decoration: underline;
+  text-underline-offset: 3px; /* Separa mais a linha sublinhada do texto */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer; /* Muda o cursor para mãozinha */
+  display: inline-block; /* Necessário para a transformação */
+  transition: transform 0.15s ease, box-shadow 0.15s ease; /* Transição suave */
+  position: relative; /* Para posicionamento do tooltip */
+}
+
+.purpleLink:hover {
+  transform: scale(1.03); /* Cresce levemente ao passar o mouse */
+  text-shadow: 0 0 2px rgba(197, 134, 192, 0.3); /* Leve brilho */
+}
+
+.purpleLink:active {
+  transform: scale(0.98); /* Diminui levemente ao clicar */
+}
+
+/* Estilos para o tooltip de "follow link" */
+.linkTooltip {
+  position: absolute;
+  top: -30px; /* Posição acima do link */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #252526; /* Cor de fundo típica do VS Code */
+  color: #e0e0e0;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none; /* Não interfere com cliques */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 1px solid #3e3e42;
+  z-index: 100;
+}
+
+/* Seta para baixo no tooltip */
+.linkTooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #252526 transparent transparent transparent;
+}
+
+/* Mostrar tooltip no hover */
+.purpleLink:hover .linkTooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
 .commentText {
   color: #6a9955; /* Verde para comentários */
   font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;

@@ -11,7 +11,7 @@ const readmeContent = [
   { content: '## Code', type: 'normal' },
   { content: '', type: 'normal' },
   { content: '```bash', type: 'normal' },
-  { content: 'https://github.com/nandotPro', type: 'link' }, // Tipo especial para o link
+  { content: 'https://github.com/nandotPro', type: 'purpleLink' },
   { content: '```', type: 'normal' },
 ];
 

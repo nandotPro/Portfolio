@@ -55,6 +55,16 @@ export default function CodeContent({
     }
   }, [visibleLineCount, onLineAnimation]);
 
+  // Função para detectar se uma string é uma URL válida
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
   // Renderização de cada linha com base no tipo
   const renderLine = (line: string, index: number) => {
     const type = lineTypes[index] || 'normal';
@@ -62,6 +72,23 @@ export default function CodeContent({
     switch (type) {
       case 'link':
         return <span className={styles.linkText}>{line}</span>;
+      case 'purpleLink':
+        // Se o texto for uma URL válida, torna o link funcional
+        if (isValidUrl(line)) {
+          return (
+            <a 
+              href={line} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className={styles.purpleLink}
+              onClick={(e) => e.stopPropagation()} // Previne a propagação do clique
+            >
+              {line}
+              <span className={styles.linkTooltip}>follow link (ctrl + click)</span>
+            </a>
+          );
+        }
+        return <span className={styles.purpleLink}>{line}</span>;
       case 'comment':
         return <span className={styles.commentText}>{line}</span>;
       case 'keyword':
