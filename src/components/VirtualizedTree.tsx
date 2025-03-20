@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react'
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { useEditorStore, FileNode } from '../store/editorStore';
-import styles from './Sidebar.module.css';
+import styles from '../styles/modules/sidebar.module.css';
 import { 
   ChevronRight, 
   ChevronDown, 

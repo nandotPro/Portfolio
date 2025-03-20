@@ -1,7 +1,7 @@
 'use client';
 
-import Layout from '../components/Layout';
-import { useI18nStore } from '../i18n/i18n';
+import Layout from '../src/components/Layout';
+import { useI18nStore } from '../src/i18n/i18n';
 
 export default function Home() {
   const { t } = useI18nStore();

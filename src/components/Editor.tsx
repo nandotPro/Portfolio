@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import styles from './Editor.module.css';
+import styles from '../styles/modules/editor.module.css';
 import dynamic from 'next/dynamic';
 import { OpenFile } from '../store/editorStore';
 import { useEditorStore } from '../store/editorStore';

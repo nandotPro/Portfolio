@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import styles from './Editor.module.css';
+import styles from '../styles/modules/editor.module.css';
 import { ContentItem } from '../content/contentManager';
 import { useCodeAnimation } from '../hooks/useCodeAnimation';
 

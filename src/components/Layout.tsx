@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, Suspense, lazy } from 'react';
-import styles from './Layout.module.css';
+import styles from '../styles/modules/layout.module.css';
 import { useEditorStore } from '../store/editorStore';
 import { useI18nStore } from '../i18n/i18n';
 import { initialFileTree } from '../data/fileTreeData';

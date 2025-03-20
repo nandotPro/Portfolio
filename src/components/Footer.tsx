@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useI18nStore, LanguageCode } from '../i18n/i18n';
-import styles from './Footer.module.css';
+import styles from '../styles/modules/footer.module.css';
 import { VscGlobe } from 'react-icons/vsc';
 
 const Footer: React.FC = () => {

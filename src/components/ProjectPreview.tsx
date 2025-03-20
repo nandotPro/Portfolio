@@ -1,6 +1,6 @@
 'use client';
 
-import styles from './ProjectPreview.module.css';
+import styles from '../styles/modules/projectPreview.module.css';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
