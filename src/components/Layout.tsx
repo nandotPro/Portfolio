@@ -6,13 +6,10 @@ import { useEditorStore } from '../store/editorStore';
 import { useI18nStore } from '../i18n/i18n';
 import { initialFileTree } from '../data/fileTreeData';
 import { ErrorBoundary } from './ErrorBoundary';
+import Footer from './footer/Footer';
+import Editor from './Editor';
 
 const Sidebar = lazy(() => import('./Sidebar'));
-const Footer = lazy(() => import('./Footer'));
-const Editor = lazy(() => import('./Editor'));
-
-const SidebarFallback = () => <div className={styles.sidebarFallback}></div>;
-const EditorFallback = () => <div className={styles.editorFallback}></div>;
 const FooterFallback = () => <div className={styles.footerFallback}></div>;
 
 interface LayoutProps {
@@ -58,11 +55,11 @@ export default function Layout({ children }: LayoutProps) {
     <div className={styles.container}>
       <div className={styles.editorContainer}>
         <ErrorBoundary fallback={<div>Algo deu errado</div>}>
-          <Suspense fallback={<SidebarFallback />}>
+          <Suspense fallback={<div className={styles.sidebarFallback}></div>}>
             <Sidebar />
           </Suspense>
         </ErrorBoundary>
-        <Suspense fallback={<EditorFallback />}>
+        <Suspense fallback={<div className={styles.editorFallback}></div>}>
           <Editor 
             openFiles={openFiles}
             activeFileId={activeFileId}
