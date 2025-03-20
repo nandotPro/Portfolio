@@ -69,13 +69,28 @@ export default function CodeContent({
   const renderLine = (line: string, index: number) => {
     const type = lineTypes[index] || 'normal';
     
+    // Determinar o nível de indentação baseado no conteúdo da linha
+    let indentLevel = 0;
+    
+    // Regras de indentação específicas para JSON
+    if (line.startsWith('  "') || line === '  }' || line === '  },') {
+      indentLevel = 1; // Primeiro nível
+    } else if (line.startsWith('    "') || line === '    }' || line === '    },') {
+      indentLevel = 2; // Segundo nível
+    }
+    
+    const indentClass = styles[`indent${indentLevel}`] || '';
+    
+    // Continuar com o switch case para determinar as cores
+    let content;
     switch (type) {
       case 'link':
-        return <span className={styles.linkText}>{line}</span>;
+        content = <span className={styles.linkText}>{line}</span>;
+        break;
       case 'purpleLink':
         // Se o texto for uma URL válida, torna o link funcional
         if (isValidUrl(line)) {
-          return (
+          content = (
             <a 
               href={line} 
               target="_blank" 
@@ -87,17 +102,84 @@ export default function CodeContent({
               <span className={styles.linkTooltip}>follow link (ctrl + click)</span>
             </a>
           );
+        } else {
+          content = <span className={styles.purpleLink}>{line}</span>;
         }
-        return <span className={styles.purpleLink}>{line}</span>;
+        break;
       case 'comment':
-        return <span className={styles.commentText}>{line}</span>;
+        content = <span className={styles.commentText}>{line}</span>;
+        break;
       case 'keyword':
-        return <span className={styles.keywordText}>{line}</span>;
+        content = <span className={styles.keywordText}>{line}</span>;
+        break;
       case 'string':
-        return <span className={styles.stringText}>{line}</span>;
+        content = <span className={styles.stringText}>{line}</span>;
+        break;
+      case 'bracket':
+        if (line.includes(',')) {
+          const bracketPart = line.slice(0, line.indexOf(','));
+          const isMainBracket = bracketPart === '{' || bracketPart === '}';
+          
+          content = (
+            <>
+              <span className={isMainBracket ? styles.jsonMainBracket : styles.jsonNestedBracket}>
+                {bracketPart}
+              </span>
+              <span className={styles.jsonPunctuation}>,</span>
+            </>
+          );
+        } else {
+          // Caso normal sem vírgula
+          const isMainBracket = line === '{' || line === '}';
+          content = (
+            <span className={isMainBracket ? styles.jsonMainBracket : styles.jsonNestedBracket}>
+              {line}
+            </span>
+          );
+        }
+        break;
+      case 'property':
+        if (line.includes(':')) {
+          const colonIndex = line.indexOf(':');
+          const key = line.substring(0, colonIndex);
+          const restParts = line.substring(colonIndex + 1);
+          
+          // Verificar se termina com vírgula e tratá-la separadamente
+          if (restParts.trim().endsWith(',')) {
+            const valueWithoutComma = restParts.slice(0, restParts.lastIndexOf(','));
+            content = (
+              <>
+                <span className={styles.jsonPropertyKey}>{key}</span>
+                <span className={styles.jsonPunctuation}>:</span>
+                <span className={styles.jsonPropertyValue}>{valueWithoutComma}</span>
+                <span className={styles.jsonPunctuation}>,</span>
+              </>
+            );
+          } else {
+            content = (
+              <>
+                <span className={styles.jsonPropertyKey}>{key}</span>
+                <span className={styles.jsonPunctuation}>:</span>
+                <span className={styles.jsonPropertyValue}>{restParts}</span>
+              </>
+            );
+          }
+        } else {
+          content = <span className={styles.plainText}>{line}</span>;
+        }
+        break;
+      case 'punctuation':
+        content = <span className={styles.jsonPunctuation}>{line}</span>;
+        break;
       default:
-        return <span className={styles.plainText}>{line}</span>;
+        content = <span className={styles.plainText}>{line}</span>;
     }
+    
+    return (
+      <div className={indentClass}>
+        {content}
+      </div>
+    );
   };
   
   return (

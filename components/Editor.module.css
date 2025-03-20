@@ -476,4 +476,69 @@
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
+}
+
+/* Estilos adicionais para formatação JSON similar ao VS Code */
+.jsonMainBracket {
+  color: #ffc53e; /* Amarelo para brackets principais */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jsonNestedBracket {
+  color: #ff6df3; /* Roxo para brackets aninhados */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jsonPropertyKey {
+  color: #a5f8f4; /* Verde ciano para chaves de propriedades */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jsonPropertyValue {
+  color: #f89ffa; /* Laranja/roxo para valores de propriedades */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.jsonPunctuation {
+  color: #ffffff; /* Branco para vírgulas e dois-pontos */
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Estilos para indentação JSON */
+.indent0 {
+  padding-left: 0;
+}
+
+.indent1 {
+  padding-left: 16px; /* Primeiro nível de indentação */
+}
+
+.indent2 {
+  padding-left: 32px; /* Segundo nível de indentação */
+}
+
+.indent3 {
+  padding-left: 48px; /* Terceiro nível de indentação */
+}
+
+.indent4 {
+  padding-left: 64px; /* Quarto nível de indentação */
+}
+
+/* Ajuste para alinhar todas as linhas */
+.codeLine {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.5;
+  min-height: 20px;
 } 
