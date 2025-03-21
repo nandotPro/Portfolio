@@ -1,0 +1,137 @@
+.editorWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--editor-bg);
+  height: 100%;
+}
+
+.editorContainer {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.codeArea {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  overflow: auto;
+  background-color: var(--editor-bg);
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  scrollbar-width: thin;
+  scrollbar-color: #555 var(--editor-bg);
+}
+
+.lineNumbers {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 8px 10px 16px;
+  background-color: var(--editor-bg);
+  border-right: 1px solid #1e1e1e;
+  user-select: none;
+  text-align: right;
+  min-width: 40px;
+  overflow: hidden;
+}
+
+.lineNumber {
+  font-size: 14px;
+  line-height: 24px;
+  color: var(--line-number-color);
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transform: none;
+}
+
+.codeContent {
+  flex: 1;
+  padding-left: 10px;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.welcomeScreen {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--editor-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcomeScreen::before {
+  content: none;
+}
+
+.welcomeText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.welcomeTitle {
+  font-size: 48px;
+  font-weight: bold;
+  color: rgba(180, 180, 180, 0.15);
+  text-shadow: none;
+  margin-bottom: 20px;
+  letter-spacing: 5px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.welcomeSubtitle {
+  font-size: 18px;
+  color: rgba(180, 180, 180, 0.3);
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* Estilos para o container de conteúdo */
+.codeContentWrapper {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+  padding: 8px 0;
+  white-space: pre;
+  tab-size: 2;
+  overflow-x: auto;
+}
+
+.codeLine {
+  padding: 0 8px;
+  min-height: 20px;
+  line-height: 20px;
+}
+
+/* Adicionar estilo para o cursor piscante */
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 16px;
+  background-color: #ffffff;
+  animation: blink 1s step-end infinite;
+  margin-left: 1px;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.codeLine {
+  display: flex;
+  align-items: flex-start;
+  line-height: 1.5;
+  min-height: 20px;
+} 

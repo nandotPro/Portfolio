@@ -1,0 +1,71 @@
+/* .MD Text */
+.plainText {
+    color: #ffffff;
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* .MD Link */
+  .purpleLink {
+    color: #a380fc; 
+    text-decoration: underline;
+    text-underline-offset: 4px; 
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    display: inline-block; 
+    transition: transform 0.15s ease, box-shadow 0.15s ease; 
+    position: relative; 
+  }
+  
+  /* .MD Link */
+  .purpleLink:hover {
+    transform: scale(1.03); 
+    text-shadow: 0 0 2px rgba(197, 134, 192, 0.3); 
+  }
+  
+  /* .MD Link */
+  .purpleLink:active {
+    transform: scale(0.98); 
+  }
+  
+  /* .MD Link */
+  .linkTooltip {
+    position: absolute;
+    top: -30px; 
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #252526; 
+    color: #e0e0e0;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none; 
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid #3e3e42;
+    z-index: 100;
+  }
+  
+  /* .MD Link */
+  .linkTooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #252526 transparent transparent transparent;
+  }
+  
+  /* .MD Link */
+  .purpleLink:hover .linkTooltip {
+    opacity: 1;
+    visibility: visible;
+  }

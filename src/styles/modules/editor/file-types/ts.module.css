@@ -1,0 +1,15 @@
+/* .TS blue */
+.keywordText {
+    color: #569cd6; 
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* .TS string */
+  .stringText {
+    color: #ce9178; 
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }

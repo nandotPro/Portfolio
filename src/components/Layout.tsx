@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, Suspense, lazy } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import styles from '../styles/modules/layout.module.css';
 import { useEditorStore } from '../store/editorStore';
 import { useI18nStore } from '../i18n/i18n';

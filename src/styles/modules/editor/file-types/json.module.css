@@ -1,0 +1,60 @@
+/* .JSON  brackets*/
+.jsonMainBracket {
+    color: #ffc53e; 
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* .JSON  brackets*/
+  .jsonNestedBracket {
+    color: #ff6df3; 
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* .JSON  property key*/
+  .jsonPropertyKey {
+    color: #a5f8f4; 
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* .JSON  property value*/
+  .jsonPropertyValue {
+    color: #f89ffa; 
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* .JSON  punctuation*/
+  .jsonPunctuation {
+    color: #ffffff; 
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  /* .JSON  indentação*/
+  .indent0 {
+    padding-left: 0;
+  }
+  
+  .indent1 {
+    padding-left: 16px; 
+  }
+  
+  .indent2 {
+    padding-left: 32px; 
+  }
+  
+  .indent3 {
+    padding-left: 48px; 
+  }
+  
+  .indent4 {
+    padding-left: 64px; 
+  }

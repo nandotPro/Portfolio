@@ -1,7 +1,10 @@
 'use client';
 
 import React from 'react';
-import styles from '../../styles/modules/editor.module.css';
+import styles from '../../styles/modules/editor/editor.module.css';
+import tsStyles from '../../styles/modules/editor/file-types/ts.module.css';
+import jsonStyles from '../../styles/modules/editor/file-types/json.module.css';
+import mdStyles from '../../styles/modules/editor/file-types/md.module.css';
 import { ContentItem } from '../../content/contentManager';
 import { useCodeAnimation } from '../../hooks/useCodeAnimation';
 
@@ -79,7 +82,7 @@ export default function CodeContent({
       indentLevel = 2; // Segundo nível
     }
     
-    const indentClass = styles[`indent${indentLevel}`] || '';
+    const indentClass = jsonStyles[`indent${indentLevel}`] || '';
     
     // Continuar com o switch case para determinar as cores
     let content;
@@ -95,25 +98,25 @@ export default function CodeContent({
               href={line} 
               target="_blank" 
               rel="noopener noreferrer" 
-              className={styles.purpleLink}
+              className={mdStyles.purpleLink}
               onClick={(e) => e.stopPropagation()} // Previne a propagação do clique
             >
               {line}
-              <span className={styles.linkTooltip}>follow link (ctrl + click)</span>
+              <span className={mdStyles.linkTooltip}>follow link (ctrl + click)</span>
             </a>
           );
         } else {
-          content = <span className={styles.purpleLink}>{line}</span>;
+          content = <span className={mdStyles.purpleLink}>{line}</span>;
         }
         break;
       case 'comment':
         content = <span className={styles.commentText}>{line}</span>;
         break;
       case 'keyword':
-        content = <span className={styles.keywordText}>{line}</span>;
+        content = <span className={tsStyles.keywordText}>{line}</span>;
         break;
       case 'string':
-        content = <span className={styles.stringText}>{line}</span>;
+        content = <span className={tsStyles.stringText}>{line}</span>;
         break;
       case 'bracket':
         if (line.includes(',')) {
@@ -122,17 +125,17 @@ export default function CodeContent({
           
           content = (
             <>
-              <span className={isMainBracket ? styles.jsonMainBracket : styles.jsonNestedBracket}>
+              <span className={isMainBracket ? jsonStyles.jsonMainBracket : jsonStyles.jsonNestedBracket}>
                 {bracketPart}
               </span>
-              <span className={styles.jsonPunctuation}>,</span>
+              <span className={jsonStyles.jsonPunctuation}>,</span>
             </>
           );
         } else {
           // Caso normal sem vírgula
           const isMainBracket = line === '{' || line === '}';
           content = (
-            <span className={isMainBracket ? styles.jsonMainBracket : styles.jsonNestedBracket}>
+            <span className={isMainBracket ? jsonStyles.jsonMainBracket : jsonStyles.jsonNestedBracket}>
               {line}
             </span>
           );
@@ -149,30 +152,30 @@ export default function CodeContent({
             const valueWithoutComma = restParts.slice(0, restParts.lastIndexOf(','));
             content = (
               <>
-                <span className={styles.jsonPropertyKey}>{key}</span>
-                <span className={styles.jsonPunctuation}>:</span>
-                <span className={styles.jsonPropertyValue}>{valueWithoutComma}</span>
-                <span className={styles.jsonPunctuation}>,</span>
+                <span className={jsonStyles.jsonPropertyKey}>{key}</span>
+                <span className={jsonStyles.jsonPunctuation}>:</span>
+                <span className={jsonStyles.jsonPropertyValue}>{valueWithoutComma}</span>
+                <span className={jsonStyles.jsonPunctuation}>,</span>
               </>
             );
           } else {
             content = (
               <>
-                <span className={styles.jsonPropertyKey}>{key}</span>
-                <span className={styles.jsonPunctuation}>:</span>
-                <span className={styles.jsonPropertyValue}>{restParts}</span>
+                <span className={jsonStyles.jsonPropertyKey}>{key}</span>
+                <span className={jsonStyles.jsonPunctuation}>:</span>
+                <span className={jsonStyles.jsonPropertyValue}>{restParts}</span>
               </>
             );
           }
         } else {
-          content = <span className={styles.plainText}>{line}</span>;
+          content = <span className={mdStyles.plainText}>{line}</span>;
         }
         break;
       case 'punctuation':
-        content = <span className={styles.jsonPunctuation}>{line}</span>;
+        content = <span className={jsonStyles.jsonPunctuation}>{line}</span>;
         break;
       default:
-        content = <span className={styles.plainText}>{line}</span>;
+        content = <span className={mdStyles.plainText}>{line}</span>;
     }
     
     return (
