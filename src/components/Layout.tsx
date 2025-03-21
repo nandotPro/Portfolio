@@ -7,9 +7,9 @@ import { useI18nStore } from '../i18n/i18n';
 import { initialFileTree } from '../data/fileTreeData';
 import { ErrorBoundary } from './ErrorBoundary';
 import Footer from './footer/Footer';
-import Editor from './Editor';
+import Editor from './editor/Editor';
 
-const Sidebar = lazy(() => import('./Sidebar'));
+const Sidebar = lazy(() => import('./sidebar/Sidebar'));
 const FooterFallback = () => <div className={styles.footerFallback}></div>;
 
 interface LayoutProps {

@@ -2,9 +2,9 @@
 
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import styles from '../styles/modules/sidebar.module.css';
-import { useEditorStore, FileNode } from '../store/editorStore';
-import { useI18nStore } from '../i18n/i18n';
+import styles from '../../styles/modules/sidebar.module.css';
+import { useEditorStore, FileNode } from '../../store/editorStore';
+import { useI18nStore } from '../../i18n/i18n';
 import { 
   ChevronRight, 
   ChevronDown, 

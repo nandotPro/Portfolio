@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import styles from '../styles/modules/editor.module.css';
+import styles from '../../styles/modules/editor.module.css';
 import dynamic from 'next/dynamic';
-import { OpenFile } from '../store/editorStore';
-import { useEditorStore } from '../store/editorStore';
+import { OpenFile } from '../../store/editorStore';
+import { useEditorStore } from '../../store/editorStore';
 import { AnimatePresence } from 'framer-motion';
-import { useTabManagement } from '../hooks/useTabManagement';
+import { useTabManagement } from '../../hooks/useTabManagement';
 import { 
   File,
   FileJson,
@@ -16,7 +16,7 @@ import {
   Hexagon,
   Info
 } from 'lucide-react';
-import { getContentByFileName, hasContent } from '../content/contentManager';
+import { getContentByFileName, hasContent } from '../../content/contentManager';
 
 // Lazy loading do componente CodeContent
 const CodeContent = dynamic(() => import('./CodeContent'), {

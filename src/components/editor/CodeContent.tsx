@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
-import styles from '../styles/modules/editor.module.css';
-import { ContentItem } from '../content/contentManager';
-import { useCodeAnimation } from '../hooks/useCodeAnimation';
+import styles from '../../styles/modules/editor.module.css';
+import { ContentItem } from '../../content/contentManager';
+import { useCodeAnimation } from '../../hooks/useCodeAnimation';
 
 export interface CodeLine {
   text: string;

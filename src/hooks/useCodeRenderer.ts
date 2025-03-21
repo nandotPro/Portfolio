@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { CodeLine } from '../components/CodeContent';
+import { CodeLine } from '../components/editor/CodeContent';
 import { useI18nStore } from '../i18n/i18n';
 
 interface UseCodeRendererOptions {
