@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
 import { OpenFile } from '../store/editorStore';
-import styles from '../components/Editor.module.css';
 import { throttle, debounce } from 'lodash';
 
 interface DragDropOptions {

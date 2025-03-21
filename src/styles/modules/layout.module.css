@@ -21,38 +21,6 @@
   }
 }
 
-/* Adicione estes estilos para os componentes de fallback */
-.sidebarFallback {
-  width: 250px;
-  background-color: var(--sidebar-bg);
-  height: 100%;
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-.editorFallback {
-  flex: 1;
-  background-color: var(--editor-bg);
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-.footerFallback {
-  height: 22px;
-  background-color: var(--footer-bg);
-  animation: pulse 1.5s infinite ease-in-out;
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 0.8;
-  }
-  100% {
-    opacity: 0.6;
-  }
-}
-
 /* Estilo para conteúdo em carregamento */
 .loadingContent {
   display: flex;

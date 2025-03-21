@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import styles from '../../styles/modules/editor.module.css';
+import tabStyles from '../../styles/modules/tab.module.css';
 import dynamic from 'next/dynamic';
 import { OpenFile } from '../../store/editorStore';
 import { useEditorStore } from '../../store/editorStore';
@@ -40,17 +41,17 @@ interface EditorProps {
 // Adicione uma função auxiliar para obter o ícone correto baseado no tipo de arquivo
 const getFileIcon = (fileName: string) => {
   if (fileName.endsWith('.ts')) {
-    return <Code2 size={16} className={`${styles.tabIcon} ${styles.iconTS}`} />;
+    return <Code2 size={16} className={`${tabStyles.tabIcon} ${tabStyles.iconTS}`} />;
   } else if (fileName.endsWith('.tsx')) {
-    return <Atom size={16} className={`${styles.tabIcon} ${styles.iconReact}`} />;
+    return <Atom size={16} className={`${tabStyles.tabIcon} ${tabStyles.iconReact}`} />;
   } else if (fileName.endsWith('.js')) {
-    return <FileType size={16} className={`${styles.tabIcon} ${styles.iconJS}`} />;
+    return <FileType size={16} className={`${tabStyles.tabIcon} ${tabStyles.iconJS}`} />;
   } else if (fileName.endsWith('.md')) {
-    return <Info size={16} className={`${styles.tabIcon} ${styles.iconMD}`} />;
+    return <Info size={16} className={`${tabStyles.tabIcon} ${tabStyles.iconMD}`} />;
   } else if (fileName.endsWith('.json')) {
-    return <Hexagon size={16} className={`${styles.tabIcon} ${styles.iconJSON}`} />;
+    return <Hexagon size={16} className={`${tabStyles.tabIcon} ${tabStyles.iconJSON}`} />;
   } else {
-    return <File size={16} className={styles.tabIcon} />;
+    return <File size={16} className={tabStyles.tabIcon} />;
   }
 };
 
@@ -238,16 +239,16 @@ export default function Editor({
 
   return (
     <div className={styles.editorWrapper}>
-      <div className={styles.tabsContainer}>
+      <div className={tabStyles.tabsContainer}>
         <div 
-          className={styles.tabs}
+          className={tabStyles.tabs}
           ref={containerRef}
         >
           <AnimatePresence>
             {openFiles.map((file, index) => (
               <div
                 key={file.id}
-                className={`${styles.tab} ${isTabActive(file.id) ? styles.activeTab : ''} ${isDragging && draggingIndex === index ? styles.draggingTab : ''}`}
+                className={`${tabStyles.tab} ${isTabActive(file.id) ? tabStyles.activeTab : ''} ${isDragging && draggingIndex === index ? tabStyles.draggingTab : ''}`}
                 onClick={() => handleSwitchTab(file.id)}
                 ref={el => {
                   itemRefs.current[index] = el;
@@ -259,9 +260,9 @@ export default function Editor({
                 onDragLeave={handleDragLeave}
               >
                 {getFileIcon(file.name)}
-                <span className={styles.tabTitle}>{file.name}</span>
+                <span className={tabStyles.tabTitle}>{file.name}</span>
                 <span 
-                  className={styles.closeButton}
+                  className={tabStyles.closeButton}
                   onClick={(e) => handleCloseTab(file.id, e)}
                 >
                   ×
@@ -272,7 +273,7 @@ export default function Editor({
           
           {dropIndicatorPosition && dropIndicatorPosition.visible && (
             <div 
-              className={styles.dropIndicator}
+              className={tabStyles.dropIndicator}
               style={{
                 left: `${dropIndicatorPosition.position}px`
               }}

@@ -8,22 +8,157 @@
   height: 16px;
 }
 
-.iconTS {
-  color: #509df0 !important;
+.iconMD {
+  color: var(--icon-md-color) !important;
+} 
+
+.iconJSON {
+  color: var(--icon-json-color) !important;
 }
 
-.iconJS {
-  color: #f7df1e !important;
+.iconTS {
+  color: var(--icon-ts-color) !important;
 }
 
 .iconReact {
-  color: #61dafb !important;
+  color: var(--icon-react-color) !important;
 }
 
-.iconJSON {
-  color: #8cc84b !important; /* Verde Node.js */
+/* Container das abas */
+.tabsContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-.iconMD {
-  color: #cccccc !important; /* Cinza claro */
-} 
+/* Estilos para o container de abas */
+.tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  height: 35px;
+  background-color: var(--editor-bg);
+  position: relative;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  height: 4px;
+  width: 0;
+}
+
+.tabs::-webkit-scrollbar-vertical {
+  display: none;
+}
+
+.tabs::-webkit-scrollbar:vertical {
+  width: 0;
+  display: none;
+}
+
+.tabs::-webkit-scrollbar-horizontal {
+  height: 4px;
+}
+
+.tabs::-webkit-scrollbar-track {
+  background: var(--editor-bg);
+}
+
+.tabs::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 4px;
+}
+
+.tabs::-webkit-scrollbar-thumb:hover {
+  background-color: #777;
+}
+
+/* Estilo de cada aba individual */
+.tab {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-right: 1px solid #252525;
+  background-color: #2d2d2d;
+  height: 35px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  min-width: 120px;
+  max-width: 200px;
+  overflow: hidden;
+  transition: background-color 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+.tab:hover:not(.activeTab) {
+  background-color: rgba(255, 255, 255, 0.03);
+  border-bottom-color: rgba(77, 120, 204, 0.2);
+}
+
+.activeTab {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #4d78cc;
+  transition: background-color 0.3s ease, border-bottom-color 0.3s ease;
+  animation: tabActivate 0.5s ease-out forwards;
+}
+
+.tabTitle {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
+  border-radius: 3px;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.tab:hover .closeButton {
+  opacity: 1;
+}
+
+.closeButton:hover {
+  transform: scale(1.1);
+  color: #ff6b6b !important;
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+  color: #ff4444 !important;
+}
+
+/* Indicador de local de soltura */
+.dropIndicator {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #4d78cc;
+  box-shadow: 0 0 4px rgba(77, 120, 204, 0.6);
+  z-index: 10;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  max-height: 35px; 
+}
+
+/* Estilo para destacar a área de destino durante o drag */
+.dragOverLeft {
+  box-shadow: inset 2px 0 0 0 #4d78cc;
+}
+
+.dragOverRight {
+  box-shadow: inset -2px 0 0 0 #4d78cc;
+}
