@@ -24,13 +24,6 @@ export function getContentByFileName(fileName: string): ContentItem[] | null {
 }
 
 /**
- * Verifica se existe conteúdo para um determinado arquivo
- */
-export function hasContent(fileName: string): boolean {
-  return !!contentMap[fileName];
-}
-
-/**
  * Obtém a extensão/tipo de um arquivo pelo seu nome
  */
 export function getFileType(fileName: string): string {

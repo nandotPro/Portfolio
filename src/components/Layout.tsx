@@ -8,8 +8,8 @@ import { initialFileTree } from '../data/fileTreeData';
 import { ErrorBoundary } from './ErrorBoundary';
 import Footer from './footer/Footer';
 import Editor from './editor/Editor';
+import Sidebar from './sidebar/Sidebar';
 
-const Sidebar = lazy(() => import('./sidebar/Sidebar'));
 const FooterFallback = () => <div className={styles.footerFallback}></div>;
 
 interface LayoutProps {
@@ -55,9 +55,7 @@ export default function Layout({ children }: LayoutProps) {
     <div className={styles.container}>
       <div className={styles.editorContainer}>
         <ErrorBoundary fallback={<div>Algo deu errado</div>}>
-          <Suspense fallback={<div className={styles.sidebarFallback}></div>}>
-            <Sidebar />
-          </Suspense>
+          <Sidebar />
         </ErrorBoundary>
         <Suspense fallback={<div className={styles.editorFallback}></div>}>
           <Editor 

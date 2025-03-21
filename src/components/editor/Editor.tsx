@@ -10,14 +10,13 @@ import { AnimatePresence } from 'framer-motion';
 import { useTabManagement } from '../../hooks/useTabManagement';
 import { 
   File,
-  FileJson,
   FileType,
   Code2,
   Atom,
   Hexagon,
   Info
 } from 'lucide-react';
-import { getContentByFileName, hasContent } from '../../content/contentManager';
+import { getContentByFileName } from '../../content/contentManager';
 
 // Lazy loading do componente CodeContent
 const CodeContent = dynamic(() => import('./CodeContent'), {
